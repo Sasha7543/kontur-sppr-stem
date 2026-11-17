@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Контур-СППР — Система підтримки прийняття рішень гуманітарного розмінування</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            emerald: {
+              600: '#059669',
+              700: '#047857',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- React 18 & Babel -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    #overview-map, #missions-map { height: 100%; min-height: 310px; width: 100%; border-radius: 0.5rem; z-index: 10; }
+    @media print {
+      .no-print { display: none !important; }
+      .print-sheet { display: block !important; box-shadow: none !important; border: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-stone-100 text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased selection:bg-emerald-600 selection:text-white">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useMemo, useRef } = React;
+
+    // ==================== 7 СТАНІВ ВІДЖЕТА ВЕРИФІКАЦІЇ СЕКТОРА РОЗМІНУВАННЯ ====================
+    const SECTOR_WIDGET_STATES = {
+      init_gis: {
+        id: 'init_gis',
+        title: 'Ініціалізація ГІС-шару...',
+        desc: 'Синхронізація координат полігонів із картографічним сервером...',
+        tag: 'завантаження',
+        tone: 'slate',
+        uavProgress: 0, sapperReady: 0, vnpFound: 0
+      },
+      gis_error: {
+        id: 'gis_error',
+        title: 'Зв’язок із геосервером втрачено',
+        desc: 'Не вдалося завантажити телеметрію сектора КХ-14. Перевірте канал зв’язку.',
+        tag: 'помилка мережі',
+        tone: 'slate',
+        uavProgress: 0, sapperReady: 0, vnpFound: 0
+      },
+      unverified: {
+        id: 'unverified',
+        title: 'Первинне звернення (Необстежено)',
+        desc: 'Ділянку зареєстровано за заявкою громади. Очікується нетехнічне обстеження.',
+        tag: 'чернетка',
+        tone: 'blue',
+        uavProgress: 15, sapperReady: 100, vnpFound: 0
+      },
+      uav_scan: {
+        id: 'uav_scan',
+        title: 'Аеророзвідка та магнітометрія БПЛА',
+        desc: 'Дрон-магнітометр сканує квадрат КХ-14 (Ізюмський лісгосп). Триває побудова карти аномалій.',
+        tag: 'сканування',
+        tone: 'amber',
+        uavProgress: 68, sapperReady: 100, vnpFound: 14
+      },
+      dss_active: {
+        id: 'dss_active',
+        title: 'Активне розмінування за пріоритетом СППР',
+        desc: 'Розрахунок ІРГ-04 та машина Armtrac-400 проводять суцільне очищення. Ранг у черзі: #1.',
+        tag: 'робота в полі',
+        tone: 'emerald',
+        uavProgress: 100, sapperReady: 84, vnpFound: 47
+      },
+      critical_hazard: {
+        id: 'critical_hazard',
+        title: 'Критична загроза: виявлено мінну пастку!',
+        desc: 'Зафіксовано касетні елементи ПФМ-1С із сейсмодатчиками. Механізовану групу зупинено!',
+        tag: 'небезпека',
+        tone: 'red',
+        uavProgress: 100, sapperReady: 18, vnpFound: 63,
+        isAlert: true
+      },
+      certified: {
+        id: 'certified',
+        title: 'Очищено та сертифіковано (Акт передачі)',
+        desc: 'Контроль якості завершено. Територію визнано безпечною та повернуто громаді.',
+        tag: 'безпечно',
+        tone: 'emerald',
+        uavProgress: 100, sapperReady: 100, vnpFound: 63
+      }
+    };
+
+    // ==================== СЕКТОРИ ГУМАНІТАРНОГО РОЗМІНУВАННЯ ====================
+    const INITIAL_ZONES = [
+      {
+        id: 'z-1',
+        code: 'КХ-14',
+        name: 'Балаклійський водогін та підстанція 110 кВ',
+        oblast: 'Харківська',
+        category: 'Критична інфраструктура',
+        areaHa: 54.0,
+        clearedHa: 38.5,
+        riskLimit: 80,
+        monitored: true,
+        k1_infra: 10, k2_pop: 9, k3_agro: 7, k4_mine: 9, k5_inc: 8,
+        coords: [49.4642, 36.8581],
+        polygon: [[49.472, 36.845], [49.475, 36.872], [49.455, 36.876], [49.452, 36.848]]
+      },
+      {
+        id: 'z-2',
+        code: 'ЧН-08',
+        name: 'Киїнка (Околиці ліцею та амбулаторії)',
+        oblast: 'Чернігівська',
+        category: 'Соціальний об’єкт',
+        areaHa: 22.4,
+        clearedHa: 14.0,
+        riskLimit: 75,
+        monitored: true,
+        k1_infra: 9, k2_pop: 10, k3_agro: 6, k4_mine: 8, k5_inc: 9,
+        coords: [51.4542, 31.1981],
+        polygon: [[51.462, 31.185], [51.464, 31.212], [51.446, 31.215], [51.444, 31.188]]
+      },
+      {
+        id: 'z-3',
+        code: 'МК-19',
+        name: 'Снігурівський агромасив (Посівний клин)',
+        oblast: 'Миколаївська',
+        category: 'Сільгоспугіддя',
+        areaHa: 96.5,
+        clearedHa: 41.2,
+        riskLimit: 78,
+        monitored: true,
+        k1_infra: 6, k2_pop: 6, k3_agro: 10, k4_mine: 8, k5_inc: 6,
+        coords: [47.0725, 32.7981],
+        polygon: [[47.082, 32.785], [47.086, 32.812], [47.064, 32.816], [47.060, 32.788]]
+      },
+      {
+        id: 'z-4',
+        code: 'ХС-05',
+        name: 'Давидів Брід (Логістична розв’язка Т-2207)',
+        oblast: 'Херсонська',
+        category: 'Транспортний коридор',
+        areaHa: 37.9,
+        clearedHa: 29.8,
+        riskLimit: 82,
+        monitored: true,
+        k1_infra: 9, k2_pop: 7, k3_agro: 8, k4_mine: 9, k5_inc: 7,
+        coords: [47.2415, 33.1912],
+        polygon: [[47.250, 33.180], [47.252, 33.205], [47.232, 33.208], [47.230, 33.182]]
+      }
+    ];
+
+    // ==================== РЕЄСТР ІНЖЕНЕРНО-САПЕРНИХ ЕКІПАЖІВ ====================
+    const INITIAL_CREWS = [
+      { id: 'ІРГ-01', location: 'Балаклійський сектор', lead: 'Богдан Кравченко', clearedHa: '34,8', token: null },
+      { id: 'ІРГ-02', location: 'Чернігівський сектор', lead: 'Олександр Лисий', clearedHa: '41,2', token: null },
+      { id: 'ІРГ-03', location: 'Снігурівський сектор', lead: 'Тарас Мельничук', clearedHa: '28,5', token: null },
+      { id: 'ІРГ-04', location: 'Бериславський сектор', lead: 'Вакансія (не закріплено)', clearedHa: '19,4', token: 'KONTUR-IRG04-8821' },
+      { id: 'ІРГ-05', location: 'Ізюмський сектор', lead: 'Денис Коваленко', clearedHa: '39,0', token: null },
+      { id: 'ІРГ-06', location: 'Охтирський сектор', lead: 'Ірина Романенко', clearedHa: '31,6', token: null },
+      { id: 'ІРГ-07', location: 'Чугуївський сектор', lead: 'Вакансія (не закріплено)', clearedHa: '15,2', token: 'NEW' },
+      { id: 'ІРГ-08', location: 'Бучанський сектор', lead: 'Максим Савченко', clearedHa: '44,1', token: null }
+    ];
+
+    // ==================== ЖУРНАЛ ОЧИЩЕННЯ ЗА ЛИСТОПАД ====================
+    const LOG_ENTRIES = [
+      { day: '01.11.2026', machineHa: 3.45, sapperHa: 1.20, vnpCount: 28, totalHa: 4.65, costK: 20.09 },
+      { day: '02.11.2026', machineHa: 4.10, sapperHa: 1.35, vnpCount: 34, totalHa: 5.45, costK: 23.54 },
+      { day: '03.11.2026', machineHa: 2.80, sapperHa: 0.95, vnpCount: 19, totalHa: 3.75, costK: 16.20 },
+      { day: '04.11.2026', machineHa: 4.60, sapperHa: 1.50, vnpCount: 41, totalHa: 6.10, costK: 26.35 },
+      { day: '05.11.2026', machineHa: 3.90, sapperHa: 1.25, vnpCount: 26, totalHa: 5.15, costK: 22.25 },
+      { day: '06.11.2026', machineHa: 4.40, sapperHa: 1.40, vnpCount: 33, totalHa: 5.80, costK: 25.06 },
+      { day: '07.11.2026', machineHa: 5.05, sapperHa: 1.60, vnpCount: 45, totalHa: 6.65, costK: 28.73 },
+      { day: '08.11.2026', machineHa: 3.70, sapperHa: 1.10, vnpCount: 22, totalHa: 4.80, costK: 20.74 },
+      { day: '09.11.2026', machineHa: 4.25, sapperHa: 1.30, vnpCount: 30, totalHa: 5.55, costK: 23.98 },
+      { day: '10.11.2026', machineHa: 4.80, sapperHa: 1.45, vnpCount: 38, totalHa: 6.25, costK: 27.00 },
+      { day: '11.11.2026', machineHa: 3.55, sapperHa: 1.15, vnpCount: 24, totalHa: 4.70, costK: 20.30 },
+      { day: '12.11.2026', machineHa: 3.60, sapperHa: 1.05, vnpCount: 21, totalHa: 4.65, costK: 20.09 }
+    ];
+
+    // Пресети стратегій СППР
+    const DSS_PRESETS = {
+      infra: { label: 'Енергетика та мережі', weights: { infra: 48, pop: 20, agro: 12, mine: 12, inc: 8 } },
+      safety: { label: 'Захист населення і шкіл', weights: { infra: 20, pop: 46, agro: 8, mine: 14, inc: 12 } },
+      agro: { label: 'Весняна посівна (Агро)', weights: { infra: 14, pop: 14, agro: 50, mine: 12, inc: 10 } },
+      balanced: { label: 'Збалансований норматив', weights: { infra: 32, pop: 26, agro: 18, mine: 14, inc: 10 } }
+    };
+
+    function cleanHtmlContent(raw) {
+      if (!raw) return '';
+      const re = new RegExp('<' + 'script\\b[^<]*(?:(?!<\\/' + 'script>)<[^<]*)*<\\/' + 'script>', 'gi');
+      return raw.replace(re, '').replace(/on\w+\s*=\s*["'][^"']*["']/gi, '');
+    }
+
+    function safeCsvValue(v) {
+      const s = String(v ?? '');
+      return /^[=+\-@]/.test(s) ? "'" + s : s;
+    }
+
+    function App() {
+      const [screen, setScreen] = useState('workspace'); // 'login' | 'register' | 'workspace'
+      const [userRole, setUserRole] = useState('analyst'); // 'analyst' | 'dispatcher'
+      const [section, setSection] = useState('dashboard');
+      // analyst: 'dashboard', 'dss_matrix', 'forecast', 'missions', 'registry', 'settings'
+      // dispatcher: 'command_center', 'crews', 'directives', 'settings'
+
+      const [themeMode, setThemeMode] = useState('light'); // 'system' | 'light' | 'dark'
+      const [locale, setLocale] = useState('uk'); // 'uk' | 'en'
+      const [widgetState, setWidgetState] = useState('dss_active');
+
+      // Блокування входу після 5 невдалих спроб
+      const [loginPass, setLoginPass] = useState('••••••••••••');
+      const [loginAttempts, setLoginAttempts] = useState(0);
+      const [lockTimer, setLockTimer] = useState(0);
+      const [loginErr, setLoginErr] = useState('');
+
+      useEffect(() => {
+        if (lockTimer > 0) {
+          const t = setTimeout(() => setLockTimer(lockTimer - 1), 1000);
+          return () => clearTimeout(t);
+        }
+      }, [lockTimer]);
+
+      // Критерії СППР (ваги у %)
+      const [criteriaWeights, setCriteriaWeights] = useState({
+        infra: 32, pop: 26, agro: 18, mine: 14, inc: 10
+      });
+
+      const [zones, setZones] = useState(INITIAL_ZONES);
+      const [editingZone, setEditingZone] = useState(null); // null або об'єкт сектора для модального вікна
+      const [selectedZoneOnMap, setSelectedZoneOnMap] = useState(null);
+
+      const [crews, setCrews] = useState(INITIAL_CREWS);
+      const [crewFilter, setCrewFilter] = useState('');
+
+      const [viewFormat, setViewFormat] = useState('visual'); // 'visual' | 'tabular'
+      const [periodFilter, setPeriodFilter] = useState('30d');
+      const [reportMonth, setReportMonth] = useState('Листопад 2026');
+      const [reminderTime, setReminderTime] = useState('За 30 хвилин до виїзду');
+      const [browserPush, setBrowserPush] = useState(true);
+
+      // Сповіщення у шапці
+      const [alertsOpen, setAlertsOpen] = useState(false);
+      const [alertsList, setAlertsList] = useState([
+        {
+          id: 'al-1',
+          title: 'ТРИВОГА СППР: Перевищено поріг у секторі [КХ-14]',
+          desc: 'Інтегральний індекс досяг 89,2 бала (поріг 80). Сектор переміщено на ранг #1.',
+          time: '17.11.2026, 10:15',
+          unread: true
+        },
+        {
+          id: 'al-2',
+          title: 'Завершено БПЛА-магнітометрію сектора [ЧН-08]',
+          desc: 'Виявлено 14 феромагнітних аномалій біля лінії водогону.',
+          time: '16.11.2026, 16:40',
+          unread: true
+        }
+      ]);
+
+      const [toastMsg, setToastMsg] = useState(null);
+
+      // Директиви штабу
+      const [directives, setDirectives] = useState([
+        {
+          id: 'd-1',
+          header: 'Оновлення регламенту нетехнічного обстеження секторів ЛЕП',
+          sender: 'Підполковник В. Савчук (Координаційний центр)',
+          date: '12.11.2026, 09:15',
+          content: '<p>Під час роботи поблизу високовольтних ліній <b>110–330 кВ</b> обов’язково залучати комплекси <i>Armtrac-400</i> з дистанційним пультом керування.</p>'
+        },
+        {
+          id: 'd-2',
+          header: 'Порядок маркування виявлених касетних суббоєприпасів',
+          sender: 'Інженерний відділ штабу ДСНС',
+          date: '10.11.2026, 14:20',
+          content: '<p>Заборонено переміщувати елементи <b>9Н210 / ПФМ-1С</b>. Здійснювати підрив на місці накладним зарядом.</p>'
+        }
+      ]);
+      const [draftHeader, setDraftHeader] = useState('Попередження про дистанційне мінування ПФМ-1С');
+      const [draftHtml, setDraftHtml] = useState('<p>У квадраті <b>КХ-14</b> виявлено касетні міни-пелюстки. Дотримуйтесь безпечної дистанції <i>50 метрів</i>.</p>\n<' + 'script>stealSessionToken()<' + '/script>');
+
+      const notify = (text) => {
+        setToastMsg(text);
+        setTimeout(() => setToastMsg(null), 3200);
+      };
+
+      useEffect(() => {
+        const el = document.documentElement;
+        if (themeMode === 'dark') el.classList.add('dark');
+        else el.classList.remove('dark');
+      }, [themeMode]);
+
+      // Розрахунок інтегрального індексу ризику СППР за методом TOPSIS / WLC
+      const evaluatedZones = useMemo(() => {
+        const totalW = criteriaWeights.infra + criteriaWeights.pop + criteriaWeights.agro + criteriaWeights.mine + criteriaWeights.inc || 100;
+        return zones.map(z => {
+          const rawScore = (
+            (criteriaWeights.infra / totalW) * (z.k1_infra / 10) +
+            (criteriaWeights.pop / totalW) * (z.k2_pop / 10) +
+            (criteriaWeights.agro / totalW) * (z.k3_agro / 10) +
+            (criteriaWeights.mine / totalW) * (z.k4_mine / 10) +
+            (criteriaWeights.inc / totalW) * (z.k5_inc / 10)
+          ) * 100;
+          const indexVal = Math.round(rawScore * 10) / 10;
+          const ratioPct = Math.round((indexVal / z.riskLimit) * 100);
+          const isCritical = z.monitored && (indexVal >= z.riskLimit);
+          return { ...z, indexVal, ratioPct, isCritical };
+        }).sort((a, b) => b.indexVal - a.indexVal);
+      }, [zones, criteriaWeights]);
+
+      // Карта Leaflet (працює і на dashboard, і на missions)
+      const leafletRef = useRef(null);
+      useEffect(() => {
+        if (screen !== 'workspace') return;
+        const mapId = section === 'missions' ? 'missions-map' : section === 'dashboard' ? 'overview-map' : null;
+        if (!mapId) return;
+        const box = document.getElementById(mapId);
+        if (!box) return;
+
+        if (leafletRef.current) {
+          leafletRef.current.remove();
+          leafletRef.current = null;
+        }
+
+        const map = L.map(box, { center: [49.2, 33.4], zoom: 6 });
+        const topoLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+          maxZoom: 18,
+          attribution: 'Esri GIS | Контур-СППР'
+        });
+        const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+          maxZoom: 18,
+          attribution: 'Esri Satellite | Контур-СППР'
+        });
+        topoLayer.addTo(map);
+        L.control.layers({ '🗺️ Топографічна': topoLayer, '🛰️ Супутник': satLayer }, null, { position: 'topright' }).addTo(map);
+
+        evaluatedZones.forEach((z, idx) => {
+          const stroke = z.isCritical ? '#dc2626' : idx === 0 ? '#d97706' : '#059669';
+          const poly = L.polygon(z.polygon, { color: stroke, fillColor: stroke, fillOpacity: 0.45, weight: 2 })
+            .bindTooltip(`<b>[${z.code}] ${z.name}</b><br/>Індекс СППР: ${z.indexVal} (Поріг: ${z.riskLimit})`)
+            .addTo(map);
+          poly.on('click', () => setSelectedZoneOnMap(z));
+
+          const marker = L.circleMarker(z.coords, { radius: 6, color: '#fff', weight: 2, fillColor: stroke, fillOpacity: 1 }).addTo(map);
+          marker.on('click', () => setSelectedZoneOnMap(z));
+        });
+
+        leafletRef.current = map;
+        return () => {
+          if (leafletRef.current) {
+            leafletRef.current.remove();
+            leafletRef.current = null;
+          }
+        };
+      }, [screen, section, evaluatedZones]);
+
+      // Експорт CSV
+      const downloadCsvReport = () => {
+        const cols = ['Дата зміни', 'Механізоване очищення (га)', 'Ручне розмінування (га)', 'Знешкоджено ВНП (од.)', 'Усього за добу (га)', 'Витрати ПММ (тис. грн)'];
+        const lines = LOG_ENTRIES.map(r => [
+          safeCsvValue(r.day),
+          String(r.machineHa.toFixed(2)).replace('.', ','),
+          String(r.sapperHa.toFixed(2)).replace('.', ','),
+          r.vnpCount,
+          String(r.totalHa.toFixed(2)).replace('.', ','),
+          String(r.costK.toFixed(2)).replace('.', ',')
+        ]);
+        const csvText = '\uFEFF' + [cols.join(';'), ...lines.map(l => l.join(';'))].join('\n');
+        const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'reestr_rozminuvannya_kontur_sppr.csv';
+        link.click();
+        notify('Таблицю CSV успішно сформовано та завантажено (для MS Excel)');
+      };
+
+      // Збереження нового або відредагованого сектора з модального вікна
+      const handleSaveZoneModal = (e) => {
+        e.preventDefault();
+        const f = e.target;
+        const code = f.zCode.value.trim() || 'ХК-22';
+        const name = f.zName.value.trim();
+        const oblast = f.zOblast.value;
+        const category = f.zCategory.value;
+        const areaHa = parseFloat(f.zArea.value) || 35.0;
+        const riskLimit = parseInt(f.zLimit.value, 10) || 75;
+        const k1_infra = parseInt(f.k1.value, 10) || 8;
+        const k2_pop = parseInt(f.k2.value, 10) || 8;
+        const k3_agro = parseInt(f.k3.value, 10) || 7;
+        const k4_mine = parseInt(f.k4.value, 10) || 9;
+        const k5_inc = parseInt(f.k5.value, 10) || 7;
+        const monitored = f.zMonitored.checked;
+
+        if (editingZone.id) {
+          setZones(prev => prev.map(item => item.id === editingZone.id ? {
+            ...item, code, name, oblast, category, areaHa, riskLimit, k1_infra, k2_pop, k3_agro, k4_mine, k5_inc, monitored
+          } : item));
+          notify(`Параметри сектора [${code}] оновлено та перераховано в СППР`);
+        } else {
+          const lat = 49.1 + Math.random() * 1.5;
+          const lng = 33.5 + Math.random() * 2.5;
+          const newObj = {
+            id: 'z-' + Date.now(),
+            code, name, oblast, category, areaHa, clearedHa: 0,
+            riskLimit, monitored, k1_infra, k2_pop, k3_agro, k4_mine, k5_inc,
+            coords: [lat, lng],
+            polygon: [[lat + 0.01, lng - 0.01], [lat + 0.01, lng + 0.01], [lat - 0.01, lng + 0.01], [lat - 0.01, lng - 0.01]]
+          };
+          setZones(prev => [newObj, ...prev]);
+          notify(`Новий сектор [${code}] додано до черги пріоритизації СППР!`);
+        }
+
+        // Якщо поріг низький — додамо тривожне сповіщення
+        if (riskLimit <= 75) {
+          setAlertsList(prev => [{
+            id: 'al-' + Date.now(),
+            title: `ТРИВОГА СППР: Сектор [${code}] перевищив поріг (${riskLimit} балів)`,
+            desc: `Об'єкт "${name}" вимагає першочергового залучення спецтехніки.`,
+            time: 'Щойно',
+            unread: true
+          }, ...prev]);
+        }
+        setEditingZone(null);
+      };
+
+      // Віджет стану сектора (7 станів)
+      const renderSectorWidget = (st) => {
+        if (st.id === 'init_gis') {
+          return (
+            <div className="bg-white dark:bg-slate-900 rounded-xl border border-stone-200 dark:border-slate-800 p-5 shadow-xs">
+              <div className="animate-pulse space-y-3">
+                <div className="h-3 bg-stone-200 dark:bg-slate-700 rounded w-1/4"></div>
+                <div className="h-5 bg-stone-200 dark:bg-slate-700 rounded w-2/3"></div>
+                <div className="h-3 bg-stone-100 dark:bg-slate-800 rounded w-5/6"></div>
+              </div>
+            </div>
+          );
+        }
+        if (st.id === 'gis_error') {
+          return (
+            <div className="bg-white dark:bg-slate-900 rounded-xl border border-stone-200 dark:border-slate-800 p-5 shadow-xs">
+              <span className="text-[11px] uppercase tracking-wider font-bold text-stone-400">Статус верифікації сектора КХ-14</span>
+              <h3 className="text-base font-bold text-slate-800 dark:text-white mt-1">{st.title}</h3>
+              <p className="text-xs text-slate-500 mt-1">{st.desc}</p>
+              <button onClick={() => { setWidgetState('dss_active'); notify('Зв’язок із геосервером відновлено'); }} className="mt-3 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold">
+                Повторити синхронізацію
+              </button>
+            </div>
+          );
+        }
+
+        const pillStyle =
+          st.tone === 'emerald' ? 'bg-emerald-100 text-emerald-800 border-emerald-300' :
+          st.tone === 'amber' ? 'bg-amber-100 text-amber-800 border-amber-300' :
+          st.tone === 'red' ? 'bg-rose-100 text-rose-800 border-rose-300' : 'bg-sky-100 text-sky-800 border-sky-300';
+
+        return (
+          <div role={st.isAlert ? 'alert' : 'region'} className={`bg-white dark:bg-slate-900 rounded-xl border p-5 shadow-xs ${st.isAlert ? 'border-rose-500 ring-2 ring-rose-500/20' : 'border-stone-200 dark:border-slate-800'}`}>
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] uppercase tracking-wider font-bold text-stone-400">Картка верифікації сектора КХ-14</span>
+              <span className={`text-[11px] px-2.5 py-0.5 rounded-md font-bold border ${pillStyle}`}>{st.tag}</span>
+            </div>
+            <h3 className="text-base font-bold text-slate-900 dark:text-white mt-1.5">{st.title}</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{st.desc}</p>
+
+            <div className="grid grid-cols-3 gap-4 mt-4 pt-3 border-t border-stone-100 dark:border-slate-800 text-xs">
+              <div>
+                <div className="flex justify-between text-slate-500 mb-1">
+                  <span>Аеророзвідка БПЛА</span>
+                  <b className="text-slate-800 dark:text-slate-200">{st.uavProgress}%</b>
+                </div>
+                <div className="w-full h-1.5 bg-stone-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <div className="h-full bg-teal-600 rounded-full transition-all" style={{ width: `${st.uavProgress}%` }}></div>
+                </div>
+              </div>
+              <div>
+                <div className="flex justify-between text-slate-500 mb-1">
+                  <span>Ресурс групи ІРГ-04</span>
+                  <b className="text-slate-800 dark:text-slate-200">{st.sapperReady}%</b>
+                </div>
+                <div className="w-full h-1.5 bg-stone-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <div className={`h-full rounded-full transition-all ${st.sapperReady < 25 ? 'bg-rose-600' : 'bg-emerald-600'}`} style={{ width: `${st.sapperReady}%` }}></div>
+                </div>
+              </div>
+              <div>
+                <span className="text-slate-500 block">Виявлено ВНП у секторі</span>
+                <b className="text-sm text-slate-900 dark:text-white">{st.vnpFound} од. боєприпасів</b>
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      // ==================== ЕКРАН АВТОРИЗАЦІЇ ТА АКТИВАЦІЇ ДОПУСКУ ====================
+      if (screen === 'login' || screen === 'register') {
+        return (
+          <div className="min-h-screen flex items-center justify-center bg-slate-900 p-4">
+            <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-12">
+              <div className="md:col-span-5 bg-emerald-800 text-white p-6 flex flex-col justify-between">
+                <div>
+                  <div className="inline-flex items-center gap-2 bg-emerald-900/60 px-3 py-1 rounded-lg text-xs font-bold mb-4">
+                    <span>🧭 Контур-СППР v2.4</span>
+                  </div>
+                  <h2 className="text-lg font-bold leading-snug">
+                    {locale === 'uk' ? 'Інтелектуальна платформа пріоритизації гуманітарного розмінування' : 'Intelligent Humanitarian Demining Decision Support System'}
+                  </h2>
+                  <p className="text-xs text-emerald-100/80 mt-2 leading-relaxed">
+                    Багатокритеріальне ранжування небезпечних ділянок, телеметрія БПЛА та оперативне планування виїздів ІРГ.
+                  </p>
+                </div>
+                <div className="text-[11px] text-emerald-200/70 border-t border-emerald-700 pt-3">
+                  Кафедра ПСТ КНУ ім. Тараса Шевченка • Лисий О. О.
+                </div>
+              </div>
+
+              <div className="md:col-span-7 p-6 sm:p-8">
+                {screen === 'login' ? (
+                  <div>
+                    <div className="flex justify-between items-center mb-4">
+                      <h1 className="text-lg font-bold text-slate-900">Вхід до захищеного контуру</h1>
+                    </div>
+                    <form onSubmit={e => {
+                      e.preventDefault();
+                      if (lockTimer > 0) return;
+                      if (loginPass === 'wrong' || loginPass.length < 4) {
+                        const att = loginAttempts + 1;
+                        setLoginAttempts(att);
+                        if (att >= 5) {
+                          setLockTimer(30);
+                          setLoginErr('Вичерпано 5 спроб входу! Доступ заблоковано на 30 с.');
+                        } else {
+                          setLoginErr(`Помилковий пароль (спроба ${att} з 5)`);
+                        }
+                        return;
+                      }
+                      setLoginErr('');
+                      setScreen('workspace');
+                      notify('Успішна авторизація в системі Контур-СППР');
+                    }} className="space-y-3.5 text-xs">
+                      <div>
+                        <label className="block font-semibold text-slate-700 mb-1">Службовий ідентифікатор (E-mail)</label>
+                        <input defaultValue="o.lysy@kontur-dsns.gov.ua" required className="w-full px-3 py-2 border border-stone-300 rounded-lg" />
+                      </div>
+                      <div>
+                        <label className="block font-semibold text-slate-700 mb-1">Криптографічний пароль</label>
+                        <input
+                          type="password"
+                          value={loginPass}
+                          onChange={e => setLoginPass(e.target.value)}
+                          required
+                          className="w-full px-3 py-2 border border-stone-300 rounded-lg"
+                        />
+                      </div>
+
+                      {loginErr && <p className="text-xs text-rose-600 font-semibold">{loginErr}</p>}
+                      {lockTimer > 0 && <p className="text-xs text-amber-600 font-bold">⏳ Тимчасове блокування: зачекайте {lockTimer} с</p>}
+
+                      <button
+                        type="submit"
+                        disabled={lockTimer > 0}
+                        className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-stone-400 text-white font-bold rounded-lg transition"
+                      >
+                        Авторизуватися в системі
+                      </button>
+                    </form>
+
+                    <div className="mt-5 pt-4 border-t border-stone-100">
+                      <span className="text-[11px] text-slate-400 block mb-2">Швидкий демо-вхід для перевірки ролей:</span>
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <button
+                          onClick={() => { setUserRole('analyst'); setSection('dashboard'); setScreen('workspace'); notify('Вхід виконано: Аналітик-сапер ІРГ-02'); }}
+                          className="py-2 px-2.5 border border-emerald-600 text-emerald-700 font-semibold rounded-lg hover:bg-emerald-50"
+                        >
+                          Аналітик-сапер ІРГ
+                        </button>
+                        <button
+                          onClick={() => { setUserRole('dispatcher'); setSection('command_center'); setScreen('workspace'); notify('Вхід виконано: Диспетчер штабу ДСНС'); }}
+                          className="py-2 px-2.5 border border-slate-300 text-slate-700 font-semibold rounded-lg hover:bg-stone-50"
+                        >
+                          Диспетчер штабу
+                        </button>
+                      </div>
+                    </div>
+
+                    <p className="text-center text-xs text-slate-500 mt-5">
+                      Новий екіпаж?{' '}
+                      <button onClick={() => setScreen('register')} className="text-emerald-700 font-bold hover:underline">
+                        Активувати сертифікат допуску
+                      </button>
+                    </p>
+                  </div>
+                ) : (
+                  <div>
+                    <h1 className="text-lg font-bold text-slate-900 mb-1">Активація допуску саперної групи</h1>
+                    <p className="text-xs text-slate-500 mb-4">Введіть токен підрозділу, згенерований диспетчером штабу</p>
+                    <form onSubmit={e => { e.preventDefault(); setScreen('workspace'); notify('Сертифікат екіпажу активовано!'); }} className="space-y-3 text-xs">
+                      <div>
+                        <label className="block font-semibold text-slate-700 mb-1">Токен допуску екіпажу</label>
+                        <input defaultValue="KONTUR-IRG04-8821" required className="w-full px-3 py-1.5 border border-stone-300 rounded-lg font-mono" />
+                      </div>
+                      <div>
+                        <label className="block font-semibold text-slate-700 mb-1">ПІБ командира розрахунку</label>
+                        <input defaultValue="Олександр Лисий" required className="w-full px-3 py-1.5 border border-stone-300 rounded-lg" />
+                      </div>
+                      <div>
+                        <label className="block font-semibold text-slate-700 mb-1">Пароль (мін. 8 знаків)</label>
+                        <input type="password" defaultValue="••••••••••" required className="w-full px-3 py-1.5 border-2 border-emerald-600 rounded-lg" />
+                        <span className="text-[11px] text-emerald-700 font-medium">✓ Пароль відповідає вимогам безпеки</span>
+                      </div>
+                      <button type="submit" className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg">
+                        Зареєструвати екіпаж і увійти
+                      </button>
+                    </form>
+                    <button onClick={() => setScreen('login')} className="mt-3 text-xs text-emerald-700 hover:underline block text-center w-full">
+                      ← Повернутися до вікна входу
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      const menuLinks = userRole === 'analyst' ? [
+        { id: 'dashboard', title: locale === 'uk' ? 'Оперативна панель' : 'GIS Dashboard', icon: '🗺️' },
+        { id: 'dss_matrix', title: locale === 'uk' ? 'Модуль СППР (Ваги)' : 'DSS Matrix & Weights', icon: '⚖️' },
+        { id: 'forecast', title: locale === 'uk' ? 'Динаміка і прогноз' : 'Forecast & Trend', icon: '📈' },
+        { id: 'missions', title: locale === 'uk' ? 'Маршрутні виїзди' : 'Field Missions', icon: '🚜' },
+        { id: 'registry', title: locale === 'uk' ? 'Реєстр та експорт' : 'Reports & Export', icon: '📑' },
+        { id: 'settings', title: locale === 'uk' ? 'Параметри контуру' : 'Settings', icon: '⚙️' }
+      ] : [
+        { id: 'command_center', title: locale === 'uk' ? 'Координаційний штаб' : 'Command Center', icon: '🛰️' },
+        { id: 'crews', title: locale === 'uk' ? 'Екіпажі та допуски' : 'Sapper Crews', icon: '🛡️' },
+        { id: 'directives', title: locale === 'uk' ? 'Директиви безпеки' : 'Safety Directives', icon: '📡' },
+        { id: 'missions', title: locale === 'uk' ? 'Маршрутні виїзди' : 'Field Missions', icon: '🚜' },
+        { id: 'settings', title: locale === 'uk' ? 'Параметри контуру' : 'Settings', icon: '⚙️' }
+      ];
+
+      const unreadAlertsCount = alertsList.filter(a => a.unread).length;
+
+      return (
+        <div className="min-h-screen flex flex-col bg-stone-100 dark:bg-slate-950">
+          {/* Темна тактична шапка */}
+          <header className="h-14 bg-slate-900 text-white px-4 lg:px-6 flex items-center justify-between sticky top-0 z-40 shadow-md no-print">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center font-bold">🧭</div>
+              <div>
+                <span className="font-bold text-sm tracking-wide">КОНТУР-СППР</span>
+                <span className="hidden md:inline-block ml-2.5 text-[11px] bg-slate-800 text-emerald-400 px-2.5 py-0.5 rounded border border-slate-700">
+                  Гуманітарне розмінування • Лисий О. О. (ІПЗ-32/5)
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              {/* Швидкий перемикач ролей */}
+              <div className="flex bg-slate-800 p-0.5 rounded-lg text-xs border border-slate-700">
+                <button
+                  onClick={() => { setUserRole('analyst'); setSection('dashboard'); notify('Активовано робоче місце: Аналітик-сапер ІРГ'); }}
+                  className={`px-2.5 py-1 rounded-md font-semibold transition ${userRole === 'analyst' ? 'bg-emerald-600 text-white' : 'text-slate-300 hover:text-white'}`}
+                >
+                  Аналітик-сапер
+                </button>
+                <button
+                  onClick={() => { setUserRole('dispatcher'); setSection('command_center'); notify('Активовано робоче місце: Диспетчер штабу ДСНС'); }}
+                  className={`px-2.5 py-1 rounded-md font-semibold transition ${userRole === 'dispatcher' ? 'bg-emerald-600 text-white' : 'text-slate-300 hover:text-white'}`}
+                >
+                  Диспетчер штабу
+                </button>
+              </div>
+
+              {/* Дзвіночок сповіщень із випадаючим списком */}
+              <div className="relative">
+                <button
+                  onClick={() => setAlertsOpen(!alertsOpen)}
+                  className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs relative flex items-center gap-1 border border-slate-700"
+                >
+                  🔔
+                  {unreadAlertsCount > 0 && (
+                    <span className="text-emerald-400 font-bold">{unreadAlertsCount}</span>
+                  )}
+                </button>
+
+                {alertsOpen && (
+                  <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-xl shadow-2xl border border-stone-200 dark:border-slate-700 p-3 z-50">
+                    <div className="flex justify-between items-center pb-2 mb-2 border-b border-stone-100 dark:border-slate-800">
+                      <span className="text-xs font-bold">Журнал тривог СППР</span>
+                      <button
+                        onClick={() => setAlertsList(prev => prev.map(a => ({ ...a, unread: false })))}
+                        className="text-[11px] text-emerald-700 font-semibold hover:underline"
+                      >
+                        Позначити прочитаними
+                      </button>
+                    </div>
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {alertsList.map(a => (
+                        <div key={a.id} className={`p-2.5 rounded-lg text-xs border ${a.unread ? 'bg-rose-50/70 border-rose-200 dark:bg-rose-950/30' : 'bg-stone-50 border-stone-200 dark:bg-slate-800'}`}>
+                          <div className="font-bold text-slate-900 dark:text-white">{a.title}</div>
+                          <div className="text-slate-600 dark:text-slate-300 mt-0.5">{a.desc}</div>
+                          <div className="text-[10px] text-slate-400 mt-1">{a.time}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <button onClick={() => setScreen('login')} className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-rose-700 text-xs text-slate-300 hover:text-white transition">
+                Вихід
+              </button>
+            </div>
+          </header>
+
+          {/* Спливне сповіщення Toast */}
+          {toastMsg && (
+            <div className="fixed bottom-6 right-6 z-50 bg-emerald-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-xl border border-emerald-500">
+              ✓ {toastMsg}
+            </div>
+          )}
+
+          {/* Модальне вікно реєстрації або редагування сектора СППР */}
+          {editingZone && (
+            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+              <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-stone-200 dark:border-slate-700 w-full max-w-lg p-6">
+                <div className="flex justify-between items-center pb-3 mb-4 border-b border-stone-100 dark:border-slate-800">
+                  <h3 className="text-base font-bold">
+                    {editingZone.id ? `Редагувати сектор [${editingZone.code}]` : 'Реєстрація нового сектора розмінування'}
+                  </h3>
+                  <button onClick={() => setEditingZone(null)} className="text-slate-400 hover:text-slate-700 text-sm font-bold">✕</button>
+                </div>
+
+                <form onSubmit={handleSaveZoneModal} className="space-y-3.5 text-xs">
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Шифр ділянки *</label>
+                      <input name="zCode" defaultValue={editingZone.code || 'ХК-22'} required className="w-full px-3 py-2 border border-stone-300 dark:bg-slate-800 rounded-lg font-mono" />
+                    </div>
+                    <div>
+                      <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Область *</label>
+                      <select name="zOblast" defaultValue={editingZone.oblast || 'Харківська'} className="w-full px-3 py-2 border border-stone-300 dark:bg-slate-800 rounded-lg bg-white">
+                        <option>Харківська</option>
+                        <option>Чернігівська</option>
+                        <option>Миколаївська</option>
+                        <option>Херсонська</option>
+                        <option>Київська</option>
+                        <option>Сумська</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Площа (га) *</label>
+                      <input name="zArea" type="number" step="0.1" defaultValue={editingZone.areaHa || 42.5} required className="w-full px-3 py-2 border border-stone-300 dark:bg-slate-800 rounded-lg" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Назва об’єкта / орієнтир *</label>
+                    <input name="zName" defaultValue={editingZone.name} required className="w-full px-3 py-2 border border-stone-300 dark:bg-slate-800 rounded-lg" />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Категорія призначення</label>
+                      <select name="zCategory" defaultValue={editingZone.category || 'Критична інфраструктура'} className="w-full px-3 py-2 border border-stone-300 dark:bg-slate-800 rounded-lg bg-white">
+                        <option>Критична інфраструктура</option>
+                        <option>Соціальний об’єкт</option>
+                        <option>Сільгоспугіддя</option>
+                        <option>Транспортний коридор</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block font-semibold text-emerald-700 mb-1">Поріг тривоги СППР (10–100 балів)</label>
+                      <input name="zLimit" type="number" min="10" max="100" defaultValue={editingZone.riskLimit || 75} required className="w-full px-3 py-2 border-2 border-emerald-600 dark:bg-slate-800 rounded-lg font-bold" />
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-stone-50 dark:bg-slate-800 rounded-xl border border-stone-200 dark:border-slate-700">
+                    <span className="font-bold text-slate-700 dark:text-slate-200 block mb-2">Експертні оцінки критеріїв загрози (від 1 до 10):</span>
+                    <div className="grid grid-cols-5 gap-2">
+                      <div>
+                        <label className="text-[10px] block text-slate-500">Інфрастр. (k₁)</label>
+                        <input name="k1" type="number" min="1" max="10" defaultValue={editingZone.k1_infra || 9} className="w-full px-2 py-1 border rounded font-bold" />
+                      </div>
+                      <div>
+                        <label className="text-[10px] block text-slate-500">Населення (k₂)</label>
+                        <input name="k2" type="number" min="1" max="10" defaultValue={editingZone.k2_pop || 8} className="w-full px-2 py-1 border rounded font-bold" />
+                      </div>
+                      <div>
+                        <label className="text-[10px] block text-slate-500">Агро (k₃)</label>
+                        <input name="k3" type="number" min="1" max="10" defaultValue={editingZone.k3_agro || 7} className="w-full px-2 py-1 border rounded font-bold" />
+                      </div>
+                      <div>
+                        <label className="text-[10px] block text-slate-500">Мінування (k₄)</label>
+                        <input name="k4" type="number" min="1" max="10" defaultValue={editingZone.k4_mine || 9} className="w-full px-2 py-1 border rounded font-bold" />
+                      </div>
+                      <div>
+                        <label className="text-[10px] block text-slate-500">Інциденти (k₅)</label>
+                        <input name="k5" type="number" min="1" max="10" defaultValue={editingZone.k5_inc || 8} className="w-full px-2 py-1 border rounded font-bold" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <label className="flex items-center gap-2 cursor-pointer pt-1">
+                    <input name="zMonitored" type="checkbox" defaultChecked={editingZone.monitored !== false} className="accent-emerald-600" />
+                    <span className="font-medium">Автоматичний контроль перевищення порога активний</span>
+                  </label>
+
+                  <div className="flex justify-end gap-2 pt-3 border-t border-stone-200 dark:border-slate-800">
+                    <button type="button" onClick={() => setEditingZone(null)} className="px-4 py-2 border border-stone-300 rounded-lg font-semibold hover:bg-stone-50">
+                      Скасувати
+                    </button>
+                    <button type="submit" className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold shadow-sm">
+                      Зберегти та розрахувати СППР
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          <div className="flex-1 flex max-w-7xl w-full mx-auto">
+            {/* Темна бічна навігаційна панель */}
+            <aside className="hidden lg:flex w-60 flex-col justify-between bg-slate-900 text-slate-300 p-3 border-r border-slate-800 no-print">
+              <nav className="space-y-1">
+                <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                  {userRole === 'analyst' ? 'Робоче місце аналітика ІРГ' : 'Консоль диспетчера штабу'}
+                </div>
+                {menuLinks.map(m => (
+                  <button
+                    key={m.id}
+                    onClick={() => setSection(m.id)}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition ${
+                      section === m.id ? 'bg-emerald-600 text-white shadow-sm' : 'hover:bg-slate-800 text-slate-300'
+                    }`}
+                  >
+                    <span>{m.icon}</span>
+                    <span>{m.title}</span>
+                  </button>
+                ))}
+              </nav>
+
+              <div className="p-3 bg-slate-800/80 rounded-xl border border-slate-700 text-[11px] space-y-1">
+                <div className="text-emerald-400 font-bold">{userRole === 'analyst' ? 'Розрахунок ІРГ-02' : 'Центральний штаб ДСНС'}</div>
+                <div className="text-slate-400">{userRole === 'analyst' ? 'Командир: О. Лисий' : 'Диспетчер: В. Савчук'}</div>
+                <button onClick={() => setSection('settings')} className="text-xs text-white hover:underline pt-1 block">
+                  ⚙️ Налаштування контуру
+                </button>
+              </div>
+            </aside>
+
+            <main className="flex-1 p-4 sm:p-6 overflow-y-auto pb-20 lg:pb-6 space-y-5">
+
+              {/* ==================== 1. ОПЕРАТИВНА ПАНЕЛЬ (DASHBOARD) ==================== */}
+              {section === 'dashboard' && (
+                <div className="space-y-5">
+                  <div className="flex flex-wrap justify-between items-end gap-2">
+                    <div>
+                      <h1 className="text-xl font-bold">Оперативна геоінформаційна панель</h1>
+                      <p className="text-xs text-slate-500">Зона відповідальності ІРГ-02: моніторинг мінної обстановки та черга пріоритетів СППР</p>
+                    </div>
+                    <button
+                      onClick={() => setEditingZone({ name: 'Новий сектор обстеження', category: 'Критична інфраструктура', riskLimit: 75, monitored: true })}
+                      className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-xs"
+                    >
+                      + Додати сектор на карту
+                    </button>
+                  </div>
+
+                  {/* Чотири зведені метрики вгорі */}
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border-l-4 border-l-rose-600 border border-stone-200 dark:border-slate-800 shadow-xs">
+                      <span className="text-xs text-slate-500">Найвищий індекс СППР</span>
+                      <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">{evaluatedZones[0]?.indexVal} бала</div>
+                      <span className="text-[11px] text-rose-600 font-medium">Сектор [{evaluatedZones[0]?.code}] (Ранг #1)</span>
+                    </div>
+                    <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border-l-4 border-l-emerald-600 border border-stone-200 dark:border-slate-800 shadow-xs">
+                      <span className="text-xs text-slate-500">Очищено з початку місяця</span>
+                      <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">63,5 га</div>
+                      <span className="text-[11px] text-emerald-700 font-medium">Виконано 68% місячної норми</span>
+                    </div>
+                    <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border-l-4 border-l-amber-500 border border-stone-200 dark:border-slate-800 shadow-xs">
+                      <span className="text-xs text-slate-500">Виявлено та знищено ВНП</span>
+                      <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">312 од.</div>
+                      <span className="text-[11px] text-slate-400">З них 84 касетні елементи</span>
+                    </div>
+                    <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border-l-4 border-l-teal-600 border border-stone-200 dark:border-slate-800 shadow-xs">
+                      <span className="text-xs text-slate-500">Прогноз очищення на місяць</span>
+                      <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">146,8 га</div>
+                      <span className="text-[11px] text-teal-700 font-medium">Інтервал 90%: 138,2–155,4 га</span>
+                    </div>
+                  </div>
+
+                  {/* Середній ряд: Статус верифікації сектора + Наступне завдання */}
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                    <div className="lg:col-span-8">
+                      {renderSectorWidget(SECTOR_WIDGET_STATES[widgetState])}
+                    </div>
+                    <div className="lg:col-span-4 bg-white dark:bg-slate-900 rounded-xl border border-stone-200 dark:border-slate-800 p-5 shadow-xs flex flex-col justify-between">
+                      <div>
+                        <span className="text-[11px] font-bold uppercase text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">Наряд-завдання #14</span>
+                        <h3 className="text-sm font-bold mt-2">Виїзд: {evaluatedZones[0]?.name}</h3>
+                        <p className="text-xs text-slate-500 mt-1">Вікно робіт: 07:30 – 15:00 • Залучено Armtrac-400 та 2 розрахунки саперів</p>
+                      </div>
+                      <button onClick={() => setSection('missions')} className="mt-3 text-xs font-bold text-emerald-700 hover:underline text-left">
+                        Відкрити розклад маршрутних виїздів →
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Нижній ряд: ГІС-карта + Таблиця ранжованих секторів СППР */}
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                    <div className="lg:col-span-7 bg-white dark:bg-slate-900 p-4 rounded-xl border border-stone-200 dark:border-slate-800 shadow-xs">
+                      <div className="flex justify-between items-center mb-3">
+                        <h3 className="text-sm font-bold">Інтерактивна карта контурів замінування (Leaflet GIS)</h3>
+                        <span className="text-xs text-emerald-700 font-semibold">{evaluatedZones.length} активні полігони</span>
+                      </div>
+                      <div className="h-72 rounded-lg overflow-hidden border border-stone-200">
+                        <div id="overview-map"></div>
+                      </div>
+                      {selectedZoneOnMap && (
+                        <div className="mt-3 p-3 bg-emerald-50/70 dark:bg-slate-800 border border-emerald-200 rounded-lg flex justify-between items-center text-xs">
+                          <div>
+                            <b>Обрано на карті: [{selectedZoneOnMap.code}] {selectedZoneOnMap.name}</b>
+                            <span className="block text-slate-500">Площа: {selectedZoneOnMap.areaHa} га • Індекс ризику СППР: <b>{selectedZoneOnMap.indexVal}</b> балів</span>
+                          </div>
+                          <button onClick={() => setEditingZone(selectedZoneOnMap)} className="px-2.5 py-1 bg-emerald-600 text-white font-bold rounded">
+                            Редагувати
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="lg:col-span-5 bg-white dark:bg-slate-900 p-4 rounded-xl border border-stone-200 dark:border-slate-800 shadow-xs flex flex-col justify-between">
+                      <div>
+                        <div className="flex justify-between items-center mb-3">
+                          <h3 className="text-sm font-bold">Черга пріоритизації секторів СППР</h3>
+                          <button onClick={() => setSection('dss_matrix')} className="text-xs text-emerald-700 font-bold hover:underline">
+                            Налаштувати ваги →
+                          </button>
+                        </div>
+                        <div className="space-y-3">
+                          {evaluatedZones.map((z, i) => (
+                            <div
+                              key={z.id}
+                              onClick={() => {
+                                setSelectedZoneOnMap(z);
+                                if (leafletRef.current) leafletRef.current.setView(z.coords, 11);
+                              }}
+                              className="p-2.5 rounded-lg bg-stone-50 dark:bg-slate-800 hover:bg-emerald-50/50 border border-stone-200 dark:border-slate-700 text-xs cursor-pointer transition"
+                            >
+                              <div className="flex justify-between font-bold">
+                                <span>#{i + 1} [{z.code}] {z.name}</span>
+                                <span className={z.isCritical ? 'text-rose-600' : 'text-emerald-700'}>{z.indexVal} / {z.riskLimit}</span>
+                              </div>
+                              <div className="w-full h-1.5 bg-stone-200 rounded-full mt-1.5 overflow-hidden">
+                                <div className={`h-full ${z.isCritical ? 'bg-rose-600' : 'bg-emerald-600'}`} style={{ width: `${Math.min(100, z.ratioPct)}%` }}></div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="mt-4 pt-3 border-t border-stone-100 dark:border-slate-800">
+                        <span className="text-[11px] font-bold text-slate-400 uppercase">Остання директива штабу:</span>
+                        <div className="text-xs text-slate-700 dark:text-slate-300 mt-1" dangerouslySetInnerHTML={{ __html: cleanHtmlContent(directives[0]?.content) }} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ==================== 2. МОДУЛЬ СППР (ВАГИ ТА ПОРОГИ) ==================== */}
+              {section === 'dss_matrix' && (
+                <div className="space-y-5">
+                  <div className="flex flex-wrap justify-between items-center gap-3">
+                    <div>
+                      <h1 className="text-xl font-bold">Модуль СППР: багатокритеріальна оцінка ризиків</h1>
+                      <p className="text-xs text-slate-500">Калібрування вагових коефіцієнтів критеріїв та керування граничними порогами небезпеки</p>
+                    </div>
+                    <button
+                      onClick={() => setEditingZone({ code: 'ХК-22', name: 'Куп’янський залізничний вузол', oblast: 'Харківська', category: 'Транспортний коридор', areaHa: 48.0, riskLimit: 75, monitored: true, k1_infra: 9, k2_pop: 8, k3_agro: 7, k4_mine: 9, k5_inc: 8 })}
+                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-xs"
+                    >
+                      + Зареєструвати сектор
+                    </button>
+                  </div>
+
+                  {/* Швидкі пресети стратегій ОПР */}
+                  <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-stone-200 dark:border-slate-800 shadow-xs">
+                    <span className="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-2">Швидкі галузеві пресети вагових коефіцієнтів СППР:</span>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                      {Object.keys(DSS_PRESETS).map(k => (
+                        <button
+                          key={k}
+                          onClick={() => {
+                            setCriteriaWeights(DSS_PRESETS[k].weights);
+                            notify(`Застосовано профіль СППР: "${DSS_PRESETS[k].label}"`);
+                          }}
+                          className="p-2.5 rounded-lg border border-stone-200 dark:border-slate-700 hover:border-emerald-600 hover:bg-emerald-50/50 text-left font-semibold transition"
+                        >
+                          🎯 {DSS_PRESETS[k].label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Повзунки ваг */}
+                  <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-stone-200 dark:border-slate-800 shadow-xs">
+                    <div className="flex justify-between items-center mb-3">
+                      <h3 className="text-sm font-bold">Вагові коефіцієнти ієрархії критеріїв (Формула: R_i = 100 · ∑ (w_j / ∑w) · (k_ij / 10))</h3>
+                      <button
+                        onClick={() => { setCriteriaWeights(DSS_PRESETS.balanced.weights); notify('Ваги скинуто до базових'); }}
+                        className="text-xs text-emerald-700 hover:underline font-semibold"
+                      >
+                        Скинути за замовчуванням
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-3 text-xs">
+                      {[
+                        { k: 'infra', title: 'Критична інфрастр. (w₁)', v: criteriaWeights.infra },
+                        { k: 'pop', title: 'Густота населення (w₂)', v: criteriaWeights.pop },
+                        { k: 'agro', title: 'Аграрна цінність (w₃)', v: criteriaWeights.agro },
+                        { k: 'mine', title: 'Складність мінування (w₄)', v: criteriaWeights.mine },
+                        { k: 'inc', title: 'Підриви та інциденти (w₅)', v: criteriaWeights.inc }
+                      ].map(item => (
+                        <div key={item.k} className="p-3 bg-stone-50 dark:bg-slate-800 rounded-lg border border-stone-200 dark:border-slate-700">
+                          <div className="flex justify-between font-bold mb-1">
+                            <span>{item.title}</span>
+                            <span className="text-emerald-700">{item.v}%</span>
+                          </div>
+                          <input
+                            type="range" min="5" max="60" value={item.v}
+                            onChange={e => setCriteriaWeights({ ...criteriaWeights, [item.k]: Number(e.target.value) })}
+                            className="w-full accent-emerald-600 cursor-pointer"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Картки секторів */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {evaluatedZones.map((z, idx) => (
+                      <div key={z.id} className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-stone-200 dark:border-slate-800 shadow-xs space-y-2.5">
+                        <div className="flex justify-between items-start gap-2">
+                          <div>
+                            <span className="text-xs font-bold bg-slate-900 text-white px-2 py-0.5 rounded mr-1.5">Ранг #{idx + 1}</span>
+                            <span className="text-xs font-bold text-emerald-700 mr-1">[{z.code}]</span>
+                            <span className="font-bold text-sm">{z.name}</span>
+                            {z.isCritical && (
+                              <span className="ml-2 px-2 py-0.5 text-[10px] font-bold bg-rose-100 text-rose-700 rounded">ПЕРЕВИЩЕНО ПОРІГ</span>
+                            )}
+                            <p className="text-xs text-slate-400 mt-1">{z.oblast} обл. • {z.category} • Площа: {z.areaHa} га</p>
+                          </div>
+
+                          <div className="flex items-center gap-2 shrink-0">
+                            <label className="flex items-center gap-1 text-xs text-slate-600 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={z.monitored}
+                                onChange={() => {
+                                  setZones(prev => prev.map(item => item.id === z.id ? { ...item, monitored: !item.monitored } : item));
+                                  notify(`Моніторинг порога для [${z.code}] змінено`);
+                                }}
+                                className="accent-emerald-600"
+                              />
+                              Активний
+                            </label>
+                            <button onClick={() => setEditingZone(z)} className="text-xs px-2.5 py-1 border border-stone-300 rounded hover:bg-stone-50 font-semibold">
+                              ✏️ Змінити
+                            </button>
+                            <button
+                              onClick={() => {
+                                setZones(prev => prev.filter(item => item.id !== z.id));
+                                notify(`Сектор [${z.code}] видалено з реєстру`);
+                              }}
+                              className="text-xs px-2 py-1 border border-stone-200 text-rose-600 rounded hover:bg-rose-50"
+                              title="Видалити сектор"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="flex justify-between text-xs">
+                          <span>Розрахунковий індекс СППР: <b>{z.indexVal}</b> (граничний поріг {z.riskLimit} балів)</span>
+                          <b>{z.ratioPct}%</b>
+                        </div>
+                        <div className="w-full h-2 bg-stone-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                          <div className={`h-full transition-all ${z.isCritical ? 'bg-rose-600' : 'bg-emerald-600'}`} style={{ width: `${Math.min(100, z.ratioPct)}%` }}></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ==================== 3. ДИНАМІКА І ПРОГНОЗ ==================== */}
+              {section === 'forecast' && (
+                <div className="space-y-5">
+                  <div className="flex flex-wrap justify-between items-center gap-3">
+                    <div>
+                      <h1 className="text-xl font-bold">Динаміка очищення та математичний прогноз</h1>
+                      <p className="text-xs text-slate-500">Статистика розмінування за способами та інтервальне прогнозування (довірчий інтервал 90%)</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <div className="flex bg-white border border-stone-200 p-0.5 rounded-lg text-xs">
+                        {['7d', '30d', '90d'].map(p => (
+                          <button
+                            key={p}
+                            onClick={() => setPeriodFilter(p)}
+                            className={`px-2.5 py-1 rounded-md font-bold ${periodFilter === p ? 'bg-slate-900 text-white' : 'text-slate-600'}`}
+                          >
+                            {p === '7d' ? '7 діб' : p === '30d' ? '30 діб' : 'Квартал'}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="flex bg-white border border-stone-200 p-0.5 rounded-lg text-xs">
+                        <button onClick={() => setViewFormat('visual')} className={`px-3 py-1 rounded-md font-bold ${viewFormat === 'visual' ? 'bg-emerald-600 text-white' : ''}`}>Графічний вигляд</button>
+                        <button onClick={() => setViewFormat('tabular')} className={`px-3 py-1 rounded-md font-bold ${viewFormat === 'tabular' ? 'bg-emerald-600 text-white' : ''}`}>Табличні дані</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Картки статистики прогнозу */}
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+                    <div className="bg-white p-4 rounded-xl border border-stone-200">
+                      <span className="text-slate-400 block">Фактично очищено (S_fact)</span>
+                      <b className="text-lg">63,50 га</b>
+                    </div>
+                    <div className="bg-white p-4 rounded-xl border border-stone-200">
+                      <span className="text-slate-400 block">Прогноз на місяць (S_prog)</span>
+                      <b className="text-lg text-emerald-700">146,80 га</b>
+                    </div>
+                    <div className="bg-white p-4 rounded-xl border border-stone-200">
+                      <span className="text-slate-400 block">Нижня межа 90% (S_min)</span>
+                      <b className="text-lg">138,20 га</b>
+                    </div>
+                    <div className="bg-white p-4 rounded-xl border border-stone-200">
+                      <span className="text-slate-400 block">Верхня межа 90% (S_max)</span>
+                      <b className="text-lg">155,40 га</b>
+                    </div>
+                  </div>
+
+                  {viewFormat === 'visual' ? (
+                    <div className="space-y-4">
+                      {/* Стовпчиковий графік по днях */}
+                      <div className="bg-white p-5 rounded-xl border border-stone-200 shadow-xs">
+                        <div className="flex justify-between items-center mb-3">
+                          <h3 className="text-sm font-bold">Добовий виробіток за способами очищення (Armtrac-400 vs ручні групи ІРГ)</h3>
+                          <div className="flex gap-4 text-xs">
+                            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-emerald-600 inline-block rounded-xs"></span> Спецтехніка Armtrac (га)</span>
+                            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-amber-500 inline-block rounded-xs"></span> Піротехніки вручну (га)</span>
+                          </div>
+                        </div>
+                        <div className="h-48 flex items-end gap-2 pt-4 pb-2 border-b border-stone-200">
+                          {LOG_ENTRIES.map((d, i) => (
+                            <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                              <div className="w-full flex items-end justify-center gap-0.5">
+                                <div className="w-1/2 bg-emerald-600 rounded-t" style={{ height: `${d.machineHa * 24}px` }} title={`Спецтехніка: ${d.machineHa} га`}></div>
+                                <div className="w-1/2 bg-amber-500 rounded-t" style={{ height: `${d.sapperHa * 24}px` }} title={`Сапери: ${d.sapperHa} га`}></div>
+                              </div>
+                              <span className="text-[10px] text-slate-400">{d.day.slice(0, 5)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Лінійний графік прогнозу з довірчим коридором */}
+                      <div className="bg-white p-5 rounded-xl border border-stone-200 shadow-xs space-y-3">
+                        <h3 className="text-sm font-bold">Прогнозна траєкторія очищення секторів до кінця місяця (довірчий коридор 90%, z = 1,645)</h3>
+                        <svg viewBox="0 0 700 190" className="w-full h-48 bg-stone-50 rounded-lg border border-stone-200">
+                          <line x1="40" y1="30" x2="660" y2="30" stroke="#dc2626" strokeWidth="1.5" strokeDasharray="5,4" />
+                          <text x="655" y="24" textAnchor="end" fontSize="10" fill="#dc2626">Цільовий план штабу (160 га)</text>
+                          <polygon points="300,115 660,34 660,68 300,115" fill="#a7f3d0" opacity="0.6" />
+                          <polyline fill="none" stroke="#059669" strokeWidth="2.5" points="40,175 90,163 140,151 190,140 245,128 300,115" />
+                          <line x1="300" y1="115" x2="660" y2="50" stroke="#047857" strokeWidth="2" strokeDasharray="6,4" />
+                        </svg>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-white rounded-xl border border-stone-200 overflow-hidden shadow-xs">
+                      <table className="w-full text-xs border-collapse">
+                        <thead>
+                          <tr className="bg-stone-100 border-b text-slate-600">
+                            <th className="py-2.5 px-4 text-left">Дата зміни</th>
+                            <th className="py-2.5 px-4 text-right">Спецтехніка, га</th>
+                            <th className="py-2.5 px-4 text-right">Сапери вручну, га</th>
+                            <th className="py-2.5 px-4 text-right">Знешкоджено ВНП</th>
+                            <th className="py-2.5 px-4 text-right">Разом, га</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {LOG_ENTRIES.map((r, i) => (
+                            <tr key={i} className="border-b border-stone-100">
+                              <td className="py-2 px-4">{r.day}</td>
+                              <td className="py-2 px-4 text-right">{r.machineHa}</td>
+                              <td className="py-2 px-4 text-right">{r.sapperHa}</td>
+                              <td className="py-2 px-4 text-right">{r.vnpCount}</td>
+                              <td className="py-2 px-4 text-right font-bold text-emerald-700">{r.totalHa}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* ==================== 4. МАРШРУТНІ ВИЇЗДИ (ОКРЕМА СТОРІНКА!) ==================== */}
+              {section === 'missions' && (
+                <div className="space-y-5">
+                  <div>
+                    <h1 className="text-xl font-bold">Маршрутні виїзди інженерно-саперних груп</h1>
+                    <p className="text-xs text-slate-500">Тижневий розклад виходу екіпажів та спецтехніки Armtrac-400 на пріоритетні сектори</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                    <div className="lg:col-span-7 bg-white p-5 rounded-xl border border-stone-200 shadow-xs space-y-4">
+                      <div className="flex justify-between items-center">
+                        <h3 className="text-sm font-bold">Календарна сітка виїздів (Найближчі 7 діб)</h3>
+                        <div className="flex gap-2 text-xs">
+                          <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold">Планове очищення</span>
+                          <span className="px-2 py-0.5 rounded bg-rose-100 text-rose-800 font-semibold">Екстрене розмінування</span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3 text-xs">
+                        {[
+                          { d: 'Пн, 16.11', s: '[КХ-14] Балаклійський водогін', h: '07:30–15:00', left: '25%', w: '45%', urgent: false },
+                          { d: 'Вт, 17.11', s: '[ЧН-08] Киїнка (Ліцей)', h: '08:00–13:30 (Екстрений виїзд)', left: '30%', w: '35%', urgent: true },
+                          { d: 'Ср, 18.11', s: '[МК-19] Снігурівський агромасив', h: '07:00–16:00', left: '20%', w: '55%', urgent: false },
+                          { d: 'Чт, 19.11', s: '[ХС-05] Траса Т-2207', h: '08:30–14:30', left: '32%', w: '38%', urgent: false },
+                          { d: 'Пт, 20.11', s: 'Технічний регламент Armtrac-400', h: 'Робота на базі', left: '40%', w: '20%', urgent: false }
+                        ].map((m, idx) => (
+                          <div key={idx} className="space-y-1 pb-2 border-b border-stone-100">
+                            <div className="flex justify-between">
+                              <span className="font-bold">{m.d} — {m.s}</span>
+                              <span className="text-slate-500">{m.h}</span>
+                            </div>
+                            <div className="w-full h-5 bg-stone-100 rounded relative overflow-hidden">
+                              <div
+                                className={`absolute top-1 bottom-1 rounded ${m.urgent ? 'bg-rose-600' : 'bg-emerald-600'}`}
+                                style={{ left: m.left, width: m.w }}
+                              ></div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="pt-2 flex items-center justify-between text-xs">
+                        <span className="font-semibold text-slate-600">Автоматичне нагадування командиру ІРГ:</span>
+                        <select
+                          value={reminderTime}
+                          onChange={e => { setReminderTime(e.target.value); notify(`Встановлено нагадування: ${e.target.value}`); }}
+                          className="px-3 py-1.5 border border-stone-300 rounded-lg bg-white font-semibold"
+                        >
+                          <option>За 15 хвилин до виїзду</option>
+                          <option>За 30 хвилин до виїзду</option>
+                          <option>За 1 годину до виїзду</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="lg:col-span-5 bg-white p-4 rounded-xl border border-stone-200 shadow-xs">
+                      <h3 className="text-sm font-bold mb-2">Карта маршрутів висування</h3>
+                      <div className="h-80 rounded-lg overflow-hidden border border-stone-200">
+                        <div id="missions-map"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ==================== 5. РЕЄСТР ТА ЕКСПОРТ ==================== */}
+              {section === 'registry' && (
+                <div className="space-y-5">
+                  <div className="flex flex-wrap justify-between items-center gap-3 no-print">
+                    <div>
+                      <h1 className="text-xl font-bold">Журнал виконаних робіт та формування звітності</h1>
+                      <p className="text-xs text-slate-500">Щоденний облік очищених гектарів і знешкоджених ВНП з вивантаженням у PDF та CSV</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={reportMonth}
+                        onChange={e => setReportMonth(e.target.value)}
+                        className="px-3 py-2 border border-stone-300 rounded-lg text-xs font-semibold bg-white"
+                      >
+                        <option>Листопад 2026</option>
+                        <option>Жовтень 2026</option>
+                      </select>
+                      <button onClick={() => window.print()} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-xs">
+                        🖨️ Друкувати PDF-акт
+                      </button>
+                      <button onClick={downloadCsvReport} className="px-4 py-2 bg-white hover:bg-stone-50 border border-stone-300 text-xs font-bold rounded-lg">
+                        📊 Вивантажити CSV
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-xl border border-stone-200 overflow-hidden shadow-xs print-sheet">
+                    <div className="p-4 border-b border-stone-200 flex justify-between items-center">
+                      <div>
+                        <h3 className="text-sm font-bold">Офіційний відомість-акт гуманітарного очищення за {reportMonth}</h3>
+                        <p className="text-xs text-slate-400">Підрозділ: ІРГ-02 (Командир розрахунку: Олександр Лисий)</p>
+                      </div>
+                      <span className="text-xs font-bold text-emerald-700">Усього за період: 63,50 га (312 ВНП)</span>
+                    </div>
+                    <table className="w-full text-xs border-collapse">
+                      <thead>
+                        <tr className="bg-stone-100 border-b border-stone-200 text-slate-600">
+                          <th className="py-2.5 px-4 text-left">Дата зміни</th>
+                          <th className="py-2.5 px-4 text-right">Спецтехніка Armtrac, га</th>
+                          <th className="py-2.5 px-4 text-right">Ручне саперами, га</th>
+                          <th className="py-2.5 px-4 text-right">Знешкоджено ВНП, од.</th>
+                          <th className="py-2.5 px-4 text-right">Разом за добу, га</th>
+                          <th className="py-2.5 px-4 text-right">Витрати ПММ, тис. грн</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {LOG_ENTRIES.map((r, i) => (
+                          <tr key={i} className="border-b border-stone-100 hover:bg-stone-50">
+                            <td className="py-2 px-4 font-medium">{r.day}</td>
+                            <td className="py-2 px-4 text-right">{r.machineHa.toFixed(2).replace('.', ',')}</td>
+                            <td className="py-2 px-4 text-right">{r.sapperHa.toFixed(2).replace('.', ',')}</td>
+                            <td className="py-2 px-4 text-right">{r.vnpCount}</td>
+                            <td className="py-2 px-4 text-right font-bold text-emerald-700">{r.totalHa.toFixed(2).replace('.', ',')}</td>
+                            <td className="py-2 px-4 text-right">{r.costK.toFixed(2).replace('.', ',')}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* ==================== 6. КООРДИНАЦІЙНИЙ ШТАБ (ДИСПЕТЧЕР) ==================== */}
+              {section === 'command_center' && (
+                <div className="space-y-5">
+                  <div>
+                    <h1 className="text-xl font-bold">Координаційний штаб розмінування регіону</h1>
+                    <p className="text-xs text-slate-500">Зведений контроль парку спецтехніки, БПЛА-магнітометрів та симулятор станів верифікації</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                    <div className="lg:col-span-8">
+                      {renderSectorWidget(SECTOR_WIDGET_STATES[widgetState])}
+                    </div>
+                    <div className="lg:col-span-4 bg-white p-5 rounded-xl border border-stone-200 shadow-xs">
+                      <h3 className="text-sm font-bold">Симулятор життєвого циклу сектора</h3>
+                      <p className="text-xs text-slate-500 mt-1">Перевірка всіх 7 станів віджета верифікації згідно з UML-діаграмою станів:</p>
+                      <select
+                        value={widgetState}
+                        onChange={e => { setWidgetState(e.target.value); notify(`Стан віджета змінено: ${SECTOR_WIDGET_STATES[e.target.value].title}`); }}
+                        className="w-full mt-3 px-3 py-2 text-xs border border-emerald-600 rounded-lg font-semibold bg-emerald-50/40"
+                      >
+                        <option value="init_gis">1. Ініціалізація ГІС-шару (скелетон)</option>
+                        <option value="gis_error">2. Зв’язок із геосервером втрачено</option>
+                        <option value="unverified">3. Первинне звернення (Необстежено)</option>
+                        <option value="uav_scan">4. Аеророзвідка та магнітометрія БПЛА</option>
+                        <option value="dss_active">5. Активне розмінування за СППР</option>
+                        <option value="critical_hazard">6. Критична загроза: мінна пастка!</option>
+                        <option value="certified">7. Очищено та сертифіковано</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Зведені показники штабу по області */}
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+                    <div className="bg-white p-4 rounded-xl border border-stone-200">
+                      <span className="text-slate-400 block">Очищено всіма ІРГ за місяць</span>
+                      <b className="text-xl mt-1 block">482,6 га</b>
+                    </div>
+                    <div className="bg-white p-4 rounded-xl border border-stone-200">
+                      <span className="text-slate-400 block">Частка комплексів Armtrac-400</span>
+                      <b className="text-xl mt-1 block text-emerald-700">347,5 га (72%)</b>
+                    </div>
+                    <div className="bg-white p-4 rounded-xl border border-stone-200">
+                      <span className="text-slate-400 block">Частка піротехнічних груп</span>
+                      <b className="text-xl mt-1 block">135,1 га (28%)</b>
+                    </div>
+                    <div className="bg-white p-4 rounded-xl border border-stone-200">
+                      <span className="text-slate-400 block">Активних екіпажів у полі</span>
+                      <b className="text-xl mt-1 block">18 / 24</b>
+                    </div>
+                  </div>
+
+                  {/* Завантаженість спецтехніки штабу */}
+                  <div className="bg-white p-5 rounded-xl border border-stone-200 shadow-xs space-y-3 text-xs">
+                    <h3 className="text-sm font-bold">Завантаженість інженерних комплексів управління ДСНС</h3>
+                    {[
+                      { name: '🚜 Важкі машини розмінування Armtrac-400 / Bozena-5', stat: '4 од. на лінії • 218,4 га', pct: 82 },
+                      { name: '🚁 Квадрокоптери з магнітометрами DJI Matrice 300 RTK', stat: '6 бортів у повітрі • 164,0 га', pct: 68 },
+                      { name: '🐕 Мобільні кінологічні та мінно-пошукові розрахунки', stat: '8 екіпажів • 100,2 га', pct: 54 }
+                    ].map((item, i) => (
+                      <div key={i} className="space-y-1">
+                        <div className="flex justify-between">
+                          <span className="font-bold">{item.name}</span>
+                          <span className="text-slate-500">{item.stat}</span>
+                        </div>
+                        <div className="w-full h-2 bg-stone-100 rounded-full overflow-hidden">
+                          <div className="h-full bg-emerald-600 rounded-full" style={{ width: `${item.pct}%` }}></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ==================== 7. ЕКІПАЖІ ТА ДОПУСКИ ==================== */}
+              {section === 'crews' && (
+                <div className="space-y-5">
+                  <div className="flex flex-wrap justify-between items-center gap-3">
+                    <div>
+                      <h1 className="text-xl font-bold">Реєстр інженерно-саперних груп та генерація токенів допуску</h1>
+                      <p className="text-xs text-slate-500">Пошук екіпажів та випуск захищених одноразових сертифікатів підключення</p>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="🔍 Пошук за шифром ІРГ, сектором або прізвищем..."
+                      value={crewFilter}
+                      onChange={e => setCrewFilter(e.target.value)}
+                      className="w-full sm:w-80 px-3 py-2 text-xs border border-stone-300 rounded-lg bg-white"
+                    />
+                  </div>
+
+                  <div className="bg-white rounded-xl border border-stone-200 overflow-hidden shadow-xs">
+                    <table className="w-full text-xs border-collapse">
+                      <thead>
+                        <tr className="bg-stone-100 border-b border-stone-200">
+                          <th className="py-2.5 px-4 text-left">Шифр ІРГ</th>
+                          <th className="py-2.5 px-4 text-left">Оперативний сектор</th>
+                          <th className="py-2.5 px-4 text-left">Командир екіпажу</th>
+                          <th className="py-2.5 px-4 text-right">Очищено за місяць, га</th>
+                          <th className="py-2.5 px-4 text-right">Сертифікат допуску</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {crews
+                          .filter(c =>
+                            c.id.toLowerCase().includes(crewFilter.toLowerCase()) ||
+                            c.location.toLowerCase().includes(crewFilter.toLowerCase()) ||
+                            c.lead.toLowerCase().includes(crewFilter.toLowerCase())
+                          )
+                          .map(c => (
+                            <tr key={c.id} className="border-b border-stone-100 hover:bg-stone-50">
+                              <td className="py-2.5 px-4 font-bold">{c.id}</td>
+                              <td className="py-2.5 px-4">{c.location}</td>
+                              <td className="py-2.5 px-4">{c.lead}</td>
+                              <td className="py-2.5 px-4 text-right font-semibold">{c.clearedHa}</td>
+                              <td className="py-2.5 px-4 text-right">
+                                {c.token === 'NEW' ? (
+                                  <button
+                                    onClick={() => {
+                                      setCrews(prev => prev.map(x => x.id === c.id ? { ...x, token: 'KONTUR-IRG07-3390' } : x));
+                                      notify(`Згенеровано новий токен допуску для ${c.id}`);
+                                    }}
+                                    className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[11px] font-bold"
+                                  >
+                                    + Згенерувати токен
+                                  </button>
+                                ) : c.token ? (
+                                  <span className="inline-flex items-center gap-1.5 font-mono bg-stone-100 px-2 py-0.5 rounded border">
+                                    {c.token}
+                                    <button onClick={() => notify(`Токен ${c.token} скопійовано в буфер обміну`)} title="Копіювати">📋</button>
+                                  </span>
+                                ) : <span className="text-emerald-700 font-semibold">✓ Підключено</span>}
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* ==================== 8. ДИРЕКТИВИ БЕЗПЕКИ (XSS ФІЛЬТР) ==================== */}
+              {section === 'directives' && (
+                <div className="space-y-5">
+                  <div>
+                    <h1 className="text-xl font-bold">Публікація оперативних директив безпеки</h1>
+                    <p className="text-xs text-slate-500">Розсилання обов’язкових циркулярів усім саперним групам із автоматичним захистом від XSS</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                    <div className="lg:col-span-7 bg-white p-5 rounded-xl border border-stone-200 space-y-3 text-xs">
+                      <h3 className="text-sm font-bold">Новий циркуляр штабу (із санітизацією XSS)</h3>
+                      <div>
+                        <label className="block font-semibold text-slate-600 mb-1">Заголовок директиви</label>
+                        <input value={draftHeader} onChange={e => setDraftHeader(e.target.value)} className="w-full px-3 py-2 border rounded-lg font-semibold" />
+                      </div>
+                      <div>
+                        <label className="block font-semibold text-slate-600 mb-1">HTML-вміст (дозволено теги &lt;b&gt;, &lt;i&gt;, &lt;p&gt;)</label>
+                        <textarea rows="4" value={draftHtml} onChange={e => setDraftHtml(e.target.value)} className="w-full px-3 py-2 border rounded-lg font-mono" />
+                      </div>
+                      <div className="p-3 bg-emerald-50/50 border border-emerald-200 rounded-lg">
+                        <span className="font-bold text-emerald-800 block mb-1">Попередній перегляд (після очищення DOMPurify — тег &lt;script&gt; вирізано):</span>
+                        <div className="text-slate-800" dangerouslySetInnerHTML={{ __html: cleanHtmlContent(draftHtml) }} />
+                      </div>
+                      <button
+                        onClick={() => {
+                          setDirectives(prev => [{ id: 'd-' + Date.now(), header: draftHeader, sender: 'Підполковник В. Савчук (Штаб)', date: '17.11.2026, 18:30', content: cleanHtmlContent(draftHtml) }, ...prev]);
+                          notify('Директиву очищено від шкідливих тегів та розіслано всім екіпажам');
+                        }}
+                        className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg"
+                      >
+                        Розіслати всім екіпажам
+                      </button>
+                    </div>
+
+                    <div className="lg:col-span-5 bg-white p-5 rounded-xl border border-stone-200 space-y-3 text-xs">
+                      <h3 className="text-sm font-bold">Архів активних директив ({directives.length})</h3>
+                      {directives.map(d => (
+                        <div key={d.id} className="p-3 bg-stone-50 rounded-lg border border-stone-200 space-y-1">
+                          <div className="flex justify-between items-start">
+                            <b className="text-slate-900">{d.header}</b>
+                            <button
+                              onClick={() => { setDirectives(prev => prev.filter(x => x.id !== d.id)); notify('Директиву видалено з архіву'); }}
+                              className="text-slate-400 hover:text-rose-600"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                          <div className="text-[11px] text-slate-400">{d.sender} • {d.date}</div>
+                          <div className="text-slate-700 pt-1" dangerouslySetInnerHTML={{ __html: d.content }} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ==================== 9. ПАРАМЕТРИ КОНТУРУ (ОКРЕМА СТОРІНКА НАЛАШТУВАНЬ!) ==================== */}
+              {section === 'settings' && (
+                <div className="space-y-5">
+                  <div>
+                    <h1 className="text-xl font-bold">Параметри захищеного контуру та профілю</h1>
+                    <p className="text-xs text-slate-500">Керування темою оформлення, мовою інтерфейсу, нормативами ПММ та браузерними сповіщеннями</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-stone-200 dark:border-slate-800 space-y-3">
+                      <h3 className="text-sm font-bold">Обліковий запис</h3>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div><span className="text-slate-400 block">Фахівець:</span><b>Олександр Лисий</b></div>
+                        <div><span className="text-slate-400 block">Підрозділ:</span><b>ІРГ-02 (ІПЗ-32/5)</b></div>
+                        <div><span className="text-slate-400 block">E-mail:</span><b>o.lysy@kontur-dsns.gov.ua</b></div>
+                        <div><span className="text-slate-400 block">Рівень допуску:</span><b className="text-emerald-700">Сертифіковано</b></div>
+                      </div>
+                      <button onClick={() => setScreen('login')} className="px-4 py-1.5 border border-stone-300 rounded-lg font-semibold hover:bg-stone-50">
+                        Завершити сесію (Вийти)
+                      </button>
+                    </div>
+
+                    <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-stone-200 dark:border-slate-800 space-y-3">
+                      <h3 className="text-sm font-bold">Режим відображення</h3>
+                      <p className="text-slate-400">Оберіть контрастну палітру для роботи на моніторі або в полі</p>
+                      <div className="grid grid-cols-3 gap-2 pt-1">
+                        {[
+                          { id: 'system', label: '🖥️ Системний' },
+                          { id: 'light', label: '☀️ Денний' },
+                          { id: 'dark', label: '🌙 Нічний тактичний' }
+                        ].map(t => (
+                          <button
+                            key={t.id}
+                            onClick={() => { setThemeMode(t.id); notify(`Активовано режим: ${t.label}`); }}
+                            className={`py-2 px-2 rounded-lg border font-bold ${themeMode === t.id ? 'bg-emerald-600 text-white border-emerald-600' : 'border-stone-200'}`}
+                          >
+                            {t.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-stone-200 dark:border-slate-800 space-y-2">
+                      <h3 className="text-sm font-bold">Нормативи операційних витрат</h3>
+                      <p className="text-slate-400">Базові коефіцієнти для розрахунку витрат палива у звітах</p>
+                      <div className="grid grid-cols-2 gap-3 pt-2">
+                        <div><span className="text-slate-400 block">Комплекс Armtrac-400:</span><b className="text-sm">4,32 тис. грн / га</b></div>
+                        <div><span className="text-slate-400 block">Магнітометрія БПЛА:</span><b className="text-sm">2,16 тис. грн / га</b></div>
+                      </div>
+                    </div>
+
+                    <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-stone-200 dark:border-slate-800 space-y-2">
+                      <h3 className="text-sm font-bold">Системні сповіщення</h3>
+                      <p className="text-slate-400">Миттєві Push-повідомлення при перетині порогів ризику СППР</p>
+                      <label className="flex items-center gap-2 pt-2 cursor-pointer font-semibold">
+                        <input
+                          type="checkbox"
+                          checked={browserPush}
+                          onChange={e => { setBrowserPush(e.target.checked); notify('Параметри сповіщень збережено'); }}
+                          className="accent-emerald-600"
+                        />
+                        <span>Дозволити екстрені сповіщення браузера</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+            </main>
+          </div>
+
+          {/* Мобільна нижня панель навігації (< 1024px) */}
+          <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-slate-900 text-slate-300 border-t border-slate-800 flex justify-around py-2 z-40 no-print">
+            {menuLinks.slice(0, 5).map(m => (
+              <button
+                key={m.id}
+                onClick={() => setSection(m.id)}
+                className={`flex flex-col items-center text-[10px] font-semibold ${section === m.id ? 'text-emerald-400' : 'text-slate-400'}`}
+              >
+                <span className="text-base">{m.icon}</span>
+                <span>{m.title.split(' ')[0]}</span>
+              </button>
+            ))}
+          </nav>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

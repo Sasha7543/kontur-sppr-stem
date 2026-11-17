@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 950 560" width="100%" height="100%" style="background:#f8fafc; font-family:'Segoe UI', Arial, sans-serif;">
+  <defs>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#0f172a" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#475569"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#059669"/>
+    </marker>
+  </defs>
+
+  <!-- Заголовок діаграми -->
+  <text x="475" y="40" text-anchor="middle" font-size="20" font-weight="bold" fill="#0f172a">
+    ДІАГРАМА СТАНІВ ІНТЕРФЕЙСНОГО ЕЛЕМЕНТА (STATE DIAGRAM)
+  </text>
+  <text x="475" y="65" text-anchor="middle" font-size="13" fill="#64748b">
+    Життєвий цикл картографічного елемента сектора розмінування (Map Sector Polygon &amp; Card)
+  </text>
+
+  <!-- Початковий стан -->
+  <circle cx="90" cy="180" r="16" fill="#0f172a"/>
+  <line x1="106" y1="180" x2="165" y2="180" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="135" y="170" text-anchor="middle" font-size="11" fill="#475569">Рендеринг</text>
+
+  <!-- Стан 1: IDLE / UNSELECTED -->
+  <rect x="175" y="145" width="180" height="70" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="265" y="175" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e293b">1. Стан спокою (Idle)</text>
+  <text x="265" y="195" text-anchor="middle" font-size="11" fill="#64748b">Базовий колір (за Pi), прозорість 45%</text>
+
+  <!-- Перехід Hover -->
+  <path d="M 355 165 L 435 165" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="395" y="155" text-anchor="middle" font-size="10" fill="#475569">mouseenter</text>
+
+  <path d="M 435 195 L 355 195" stroke="#475569" stroke-width="1.5" stroke-dasharray="3,3" marker-end="url(#arrow)"/>
+  <text x="395" y="210" text-anchor="middle" font-size="10" fill="#475569">mouseleave</text>
+
+  <!-- Стан 2: HOVERED -->
+  <rect x="445" y="145" width="190" height="70" rx="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="2" filter="url(#shadow)"/>
+  <text x="540" y="175" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d4ed8">2. Наведення (Hovered)</text>
+  <text x="540" y="195" text-anchor="middle" font-size="11" fill="#2563eb">Потовщення контуру, показ Tooltip</text>
+
+  <!-- Перехід Click -->
+  <line x1="635" y1="180" x2="715" y2="180" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="675" y="170" text-anchor="middle" font-size="11" font-weight="bold" fill="#1d4ed8">onClick</text>
+
+  <!-- Стан 3: SELECTED / INSPECTING -->
+  <rect x="725" y="145" width="200" height="70" rx="10" fill="#fdf4ff" stroke="#a855f7" stroke-width="2" filter="url(#shadow)"/>
+  <text x="825" y="175" text-anchor="middle" font-size="13" font-weight="bold" fill="#7e22ce">3. Вибраний (Selected)</text>
+  <text x="825" y="195" text-anchor="middle" font-size="11" fill="#9333ea">Фокус карти, плашка інспекції</text>
+
+  <!-- Перехід вниз: Зміна статусу -->
+  <path d="M 825 215 L 825 310" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="835" y="265" text-anchor="start" font-size="11" fill="#475569">Зміна статусу (Select)</text>
+
+  <!-- Стан 4: STATUS EDITING -->
+  <rect x="725" y="320" width="200" height="70" rx="10" fill="#fffbeb" stroke="#f59e0b" stroke-width="2" filter="url(#shadow)"/>
+  <text x="825" y="350" text-anchor="middle" font-size="13" font-weight="bold" fill="#b45309">4. Зміна статусу</text>
+  <text x="825" y="370" text-anchor="middle" font-size="11" fill="#d97706">В роботі / Очищено</text>
+
+  <!-- Перехід до CLEARED -->
+  <path d="M 725 355 L 535 355" stroke="#059669" stroke-width="2" marker-end="url(#arrow-green)"/>
+  <text x="630" y="345" text-anchor="middle" font-size="11" font-weight="bold" fill="#059669">status = 'cleared'</text>
+
+  <!-- Стан 5: CLEARED -->
+  <rect x="330" y="320" width="195" height="70" rx="10" fill="#ecfdf5" stroke="#10b981" stroke-width="2" filter="url(#shadow)"/>
+  <text x="427" y="350" text-anchor="middle" font-size="13" font-weight="bold" fill="#047857">5. Очищено (Cleared)</text>
+  <text x="427" y="370" text-anchor="middle" font-size="11" fill="#059669">Зелений колір, Pi=0, вихід з черги</text>
+
+  <!-- Завершення циклу -->
+  <line x1="330" y1="355" x2="220" y2="355" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <circle cx="195" cy="355" r="16" fill="none" stroke="#0f172a" stroke-width="2"/>
+  <circle cx="195" cy="355" r="10" fill="#0f172a"/>
+  <text x="195" y="390" text-anchor="middle" font-size="11" fill="#64748b">Кінець циклу</text>
+</svg>
