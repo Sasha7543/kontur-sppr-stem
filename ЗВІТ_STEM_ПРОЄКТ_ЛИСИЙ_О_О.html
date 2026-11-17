@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Звіт до STEM-проєкту — Лисий Олександр Олександрович, ІПЗ-32 (5)</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 0;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: "Times New Roman", Times, serif;
+      font-size: 12pt;
+      line-height: 1.5;
+      color: #000;
+      background: #d6d3d1;
+      margin: 0;
+      padding: 20px 0;
+    }
+    .sheet {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto 20px auto;
+      background: #fff;
+      padding: 20mm 10mm 20mm 20mm;
+      position: relative;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.14);
+      page-break-after: always;
+      break-after: page;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    @media print {
+      body { background: #fff; padding: 0; }
+      .sheet { margin: 0; box-shadow: none; width: 210mm; height: 297mm; }
+      .no-print { display: none !important; }
+    }
+    .page-content {
+      flex: 1;
+    }
+    .page-num {
+      text-align: right;
+      font-size: 12pt;
+      margin-top: 6mm;
+    }
+    h1 {
+      font-size: 12pt;
+      font-weight: bold;
+      text-align: center;
+      text-transform: uppercase;
+      margin: 0 0 12pt 0;
+    }
+    h2 {
+      font-size: 12pt;
+      font-weight: bold;
+      margin: 12pt 0 6pt 0;
+      text-indent: 1.25cm;
+    }
+    p {
+      margin: 0 0 8pt 0;
+      text-align: justify;
+      text-indent: 1.25cm;
+    }
+    p.no-indent {
+      text-indent: 0;
+    }
+    ul, ol {
+      margin: 0 0 8pt 0;
+      padding-left: 1.8cm;
+    }
+    li {
+      text-align: justify;
+      margin-bottom: 4pt;
+    }
+    table.doc-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 6pt 0 12pt 0;
+      font-size: 12pt;
+      line-height: 1.25;
+    }
+    table.doc-table th, table.doc-table td {
+      border: 1px solid #000;
+      padding: 5pt 7pt;
+      vertical-align: top;
+      text-align: left;
+    }
+    table.doc-table th {
+      text-align: center;
+      font-weight: bold;
+      background: #fafaf9;
+    }
+    .table-title {
+      text-indent: 0;
+      font-size: 13pt;
+      margin: 8pt 0 4pt 0;
+    }
+    .fig-box {
+      text-align: center;
+      margin: 10pt 0;
+    }
+    .fig-caption {
+      text-align: center;
+      text-indent: 0;
+      font-size: 13pt;
+      margin-top: 6pt;
+      margin-bottom: 8pt;
+    }
+    .title-frame {
+      border: 1px solid #000;
+      width: 100%;
+      height: 257mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .title-header {
+      text-align: center;
+      padding-top: 12mm;
+      font-size: 14pt;
+      line-height: 1.6;
+    }
+    .title-middle {
+      text-align: center;
+      padding: 0 12mm;
+    }
+    .title-footer-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13pt;
+    }
+    .title-footer-table td {
+      border-top: 1px solid #000;
+      border-right: 1px solid #000;
+      padding: 8pt 10pt;
+      vertical-align: middle;
+    }
+    .title-footer-table td:last-child {
+      border-right: none;
+    }
+    .toc-row {
+      display: flex;
+      align-items: baseline;
+      margin-bottom: 4pt;
+      font-size: 13.5pt;
+    }
+    .toc-row.sub {
+      padding-left: 0.7cm;
+    }
+    .toc-dots {
+      flex: 1;
+      border-bottom: 1px dotted #000;
+      margin: 0 6px;
+    }
+    .formula-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 10pt 0;
+      padding-left: 2cm;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Верхня панель керування (не друкується) -->
+  <div class="no-print" style="max-width:210mm; margin:0 auto 15px auto; background:#064e3b; color:#fff; padding:12px 20px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; font-family:sans-serif; font-size:14px;">
+    <div>
+      <b>Звіт до індивідуального STEM-проєкту «Контур-СППР» (20 сторінок А4)</b><br/>
+      <span style="font-size:12px; color:#a7f3d0;">Виконав: Лисий Олександр Олександрович, ІПЗ-32 (5) | Перевірила: Ірина ЮРЧУК</span>
+    </div>
+    <button onclick="window.print()" style="background:#10b981; color:#022c22; border:none; padding:9px 18px; border-radius:6px; font-weight:bold; cursor:pointer;">
+      🖨️ Зберегти як PDF (Ctrl + P)
+    </button>
+  </div>
+
+  <!-- ==================== СТОРІНКА 1: ТИТУЛЬНИЙ АРКУШ ==================== -->
+  <div class="sheet">
+    <div class="title-frame">
+      <div class="title-header">
+        КИЇВСЬКИЙ НАЦІОНАЛЬНИЙ УНІВЕРСИТЕТ імені Тараса Шевченка<br>
+        ФАКУЛЬТЕТ ІНФОРМАЦІЙНИХ ТЕХНОЛОГІЙ<br>
+        Кафедра програмних систем і технологій
+      </div>
+
+      <div class="title-middle">
+        <p class="no-indent" style="text-align:center; margin-bottom:8pt;">Дисципліна</p>
+        <p class="no-indent" style="text-align:center; font-weight:bold; margin-bottom:14pt;">«Розробник фронтенду програмних систем»</p>
+        <p class="no-indent" style="text-align:center; font-weight:bold; margin-bottom:14pt;">Звіт до індивідуального STEM-проєкту на тему</p>
+        <p class="no-indent" style="text-align:center; font-weight:bold; font-size:15pt; line-height:1.4;">
+          «Веб-інтерфейс системи підтримки прийняття рішень для оцінки ризиків та пріоритизації гуманітарного розмінування територій.<br>Фронтенд складова»
+        </p>
+      </div>
+
+      <table class="title-footer-table">
+        <tr>
+          <td style="width:22%; font-weight:bold;">Виконав<br>здобувач:</td>
+          <td style="width:28%;">ЛИСИЙ<br>Олександр<br>Олександрович</td>
+          <td style="width:22%; font-weight:bold;">Перевірила:</td>
+          <td style="width:28%;">Ірина ЮРЧУК</td>
+        </tr>
+        <tr>
+          <td>Група<br>(підгрупа)</td>
+          <td>ІПЗ-32 (5)</td>
+          <td>Дата<br>перевірки</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td colspan="4" style="text-align:center; padding:10pt;">2026</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ==================== СТОРІНКА 2: ЗМІСТ ==================== -->
+  <div class="sheet">
+    <div class="page-content">
+      <h1>ЗМІСТ</h1>
+      <div class="toc-row"><span>РОЗДІЛ 1 ПРОЄКТУВАННЯ ПРОГРАМНОГО ПРОДУКТУ</span><span class="toc-dots"></span><span>3</span></div>
+      <div class="toc-row sub"><span>1.1 Предметна область та функціональна специфікація</span><span class="toc-dots"></span><span>3</span></div>
+      <div class="toc-row sub"><span>1.2 Моделювання потоків користувача (User Flow)</span><span class="toc-dots"></span><span>4</span></div>
+      <div class="toc-row sub"><span>1.3 Діаграма станів віджета «Верифікація сектора розмінування»</span><span class="toc-dots"></span><span>6</span></div>
+      <div class="toc-row sub"><span>1.4 Архітектурна організація клієнтського застосунку</span><span class="toc-dots"></span><span>8</span></div>
+
+      <div class="toc-row"><span>РОЗДІЛ 2 ПРОГРАМНА РЕАЛІЗАЦІЯ</span><span class="toc-dots"></span><span>9</span></div>
+      <div class="toc-row sub"><span>2.1 Обґрунтування вибору програмного стеку</span><span class="toc-dots"></span><span>9</span></div>
+      <div class="toc-row sub"><span>2.2 Клієнт-серверний обмін та імітація геосервера</span><span class="toc-dots"></span><span>9</span></div>
+      <div class="toc-row sub"><span>2.3 Математична модель СППР та інтервальне прогнозування</span><span class="toc-dots"></span><span>10</span></div>
+      <div class="toc-row sub"><span>2.4 Адаптивна верстка для польових планшетів і смартфонів</span><span class="toc-dots"></span><span>10</span></div>
+      <div class="toc-row sub"><span>2.5 Забезпечення кросбраузерної сумісності</span><span class="toc-dots"></span><span>11</span></div>
+      <div class="toc-row sub"><span>2.6 Механізми інформаційної безпеки</span><span class="toc-dots"></span><span>12</span></div>
+      <div class="toc-row sub"><span>2.7 Ергономіка та доступність інтерфейсу (UX / WCAG)</span><span class="toc-dots"></span><span>12</span></div>
+      <div class="toc-row sub"><span>2.8 Автоматизоване тестування</span><span class="toc-dots"></span><span>12</span></div>
+      <div class="toc-row sub"><span>2.9 Репозиторій вихідного коду</span><span class="toc-dots"></span><span>12</span></div>
+
+      <div class="toc-row"><span>РОЗДІЛ 3 КЕРІВНИЦТВО КОРИСТУВАЧА (USER GUIDE)</span><span class="toc-dots"></span><span>13</span></div>
+      <div class="toc-row sub"><span>3.1 Вступ та цільове призначення</span><span class="toc-dots"></span><span>13</span></div>
+      <div class="toc-row sub"><span>3.2 Швидкий старт і перша авторизація</span><span class="toc-dots"></span><span>13</span></div>
+      <div class="toc-row sub"><span>3.3 Огляд робочих зон та каркас екранів</span><span class="toc-dots"></span><span>14</span></div>
+      <div class="toc-row sub"><span>3.4 Покрокова інструкція основних процесів</span><span class="toc-dots"></span><span>17</span></div>
+      <div class="toc-row sub"><span>3.5 Інструментарій диспетчера координаційного штабу</span><span class="toc-dots"></span><span>18</span></div>
+      <div class="toc-row sub"><span>3.6 Усунення типових несправностей</span><span class="toc-dots"></span><span>18</span></div>
+
+      <div class="toc-row"><span>ВИСНОВОК</span><span class="toc-dots"></span><span>19</span></div>
+      <div class="toc-row"><span>СПИСОК ВИКОРИСТАНИХ ДЖЕРЕЛ</span><span class="toc-dots"></span><span>20</span></div>
+    </div>
+    <div class="page-num">2</div>
+  </div>
+
+  <!-- ==================== СТОРІНКА 3: РОЗДІЛ 1 (1.1) ==================== -->
+  <div class="sheet">
+    <div class="page-content">
+      <h1>РОЗДІЛ 1 ПРОЄКТУВАННЯ ПРОГРАМНОГО ПРОДУКТУ</h1>
+      <h2>1.1 Предметна область та функціональна специфікація</h2>
+      <p>
+        Очищення деокупованих територій України від вибухонебезпечних предметів (ВНП) потребує злагодженої координації десятків інженерно-саперних груп (ІРГ), важких машин механізованого розмінування та комплексів аеророзвідки БПЛА. Коли заявки від місцевих громад і агропідприємств надходять одночасно, командирам бракує інструменту, який би об’єктивно порівнював ступінь небезпеки різних ділянок і формував чергу виїздів. Для розв’язання цієї задачі я розробив веб-платформу «Контур-СППР» — клієнтську частину геоінформаційної системи підтримки прийняття рішень з гуманітарного розмінування.
+      </p>
+      <p>
+        У програмному продукті передбачено розмежування повноважень між двома категоріями фахівців. Аналітик-сапер працює з оперативними даними своєї зони відповідальності: переглядає векторні контури замінованих секторів на ГІС-карті, калібрує вагові коефіцієнти критеріїв СППР, контролює перевищення граничних порогів ризику, аналізує прогноз виконання місячної норми очищення та формує звітні акти. Диспетчер координаційного штабу керує ресурсами всього управління: відстежує статус верифікації секторів, генерує токени допуску для нових екіпажів і розсилає обов’язкові директиви безпеки. Перелік функціональних можливостей за ролями зведено в табл. 1.
+      </p>
+
+      <p class="table-title">Таблиця 1 – Розподіл функціональних можливостей системи «Контур-СППР»</p>
+      <table class="doc-table">
+        <thead>
+          <tr>
+            <th style="width:20%;">Категорія користувача</th>
+            <th style="width:55%;">Доступний функціонал</th>
+            <th style="width:25%;">Екранний модуль</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Неавторизований користувач</td>
+            <td>Автентифікація за службовим обліковим записом, активація нового екіпажу за токеном допуску штабу</td>
+            <td>«Вхід», «Активація допуску»</td>
+          </tr>
+          <tr>
+            <td>Аналітик-сапер ІРГ</td>
+            <td>Інтерактивна ГІС-карта полігонів, віджет верифікації сектора, зведені KPI-метрики, ранг у черзі СППР</td>
+            <td>«Оперативна панель»</td>
+          </tr>
+          <tr>
+            <td>Аналітик-сапер ІРГ</td>
+            <td>Налаштування ваг критеріїв моделі СППР (w₁–w₅), реєстрація нових секторів і порогових індексів загрози</td>
+            <td>«Модуль СППР (Ваги)»</td>
+          </tr>
+          <tr>
+            <td>Аналітик-сапер ІРГ</td>
+            <td>Статистика механізованого й ручного очищення за змінами, розрахунок прогнозу площі з 90% інтервалом</td>
+            <td>«Динаміка і прогноз»</td>
+          </tr>
+          <tr>
+            <td>Аналітик-сапер ІРГ</td>
+            <td>Тижневий розклад виїздів груп і комплексів Armtrac-400, таймер попередження перед виходом колони</td>
+            <td>«Маршрутні виїзди»</td>
+          </tr>
+          <tr>
+            <td>Аналітик-сапер ІРГ</td>
+            <td>Щоденний журнал обстежених площ та знешкоджених ВНП, генерація офіційного акта у PDF та вивантаження CSV</td>
+            <td>«Реєстр та експорт»</td>
+          </tr>
+          <tr>
+            <td>Диспетчер штабу</td>
+            <td>Моніторинг зведеного парку спецтехніки та дронів, інтерактивний симулятор станів верифікації сектора</td>
+            <td>«Координаційний штаб»</td>
+          </tr>
+          <tr>
+            <td>Диспетчер штабу</td>
+            <td>Ведення реєстру саперних екіпажів, випуск одноразових токенів підключення для командирів груп</td>
+            <td>«Екіпажі та допуски»</td>
+          </tr>
+          <tr>
+            <td>Диспетчер штабу</td>
+            <td>Розсилання оперативних директив безпеки з автоматичним фільтруванням небезпечних HTML-вставок</td>
+            <td>«Директиви безпеки»</td>
+          </tr>
+          <tr>
+            <td>Усі авторизовані ролі</td>
+            <td>Перемикання денної/нічної тактичної теми, перегляд нормативів ПММ, конфігурація браузерних сповіщень</td>
+            <td>«Параметри контуру»</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="page-num">3</div>
+  </div>
+
+  <!-- ==================== СТОРІНКА 4: РОЗДІЛ 1 (1.2) ==================== -->
+  <div class="sheet">
+    <div class="page-content">
+      <h2>1.2 Моделювання потоків користувача (User Flow)</h2>
+      <p>
+        Для проєктування логіки взаємодії людини з інтерфейсом використано діаграми потоку користувача (User Flow) [[1]]. Така нотація дозволяє зафіксувати всі точки прийняття рішень, клієнтську валідацію форм і реакцію системи на помилкові дії оператора ще до написання програмного коду.
+      </p>
+      <p>
+        У роботі побудовано дві діаграми для ключових бізнес-процесів платформи. На схемах використано стандартні графічні примітиви: термінатори (заокруглені блоки) позначають вхід і завершення сценарію, прямокутники — операційні кроки, а ромби — логічні умови розгалуження з гілками «так» або «ні».
+      </p>
+      <p>
+        Перша схема (рис. 1) відображає процедуру підключення нового саперного екіпажу за захищеним токеном допуску. Оскільки інформація про розташування мінних полів є чутливою, вільна самореєстрація у «Контур-СППР» заборонена. Командир ІРГ отримує в координаційному штабі унікальний токен підрозділу (наприклад, <code>KONTUR-IRG04-8821</code>), відкриває вікно активації та заповнює реєстраційну анкету. На першому етапі клієнтський валідатор Zod перевіряє формат службової пошти та стійкість пароля безпосередньо в браузері. Якщо вимоги порушено, поле підсвічується червоним контуром із текстом підказки. Після успішної локальної перевірки запит надходить до сервера, який звіряє чинність токена допуску. Коли токен підтверджено, система створює обліковий запис, закріплює за ним відповідний географічний сектор і перенаправляє фахівця на головну оперативну панель.
+      </p>
+      <p>
+        Друга схема (рис. 2) ілюструє процес внесення нової підозрілої ділянки до матриці СППР та встановлення граничного порога індексу загрози. Аналітик переходить у модуль «Модуль СППР (Ваги)», відкриває діалогове вікно реєстрації сектора та вводить його шифр, категорію земель, площу й бальні оцінки п’яти критеріїв небезпеки (<i>k</i><sub>1</sub>..<i>k</i><sub>5</sub>). Після перевірки коректності введених параметрів математичне ядро обчислює інтегральний індекс ризику <i>R<sub>i</sub></i>. Якщо обчислений показник перетинає встановлену критичну межу, система генерує тривожне сповіщення та піднімає сектор на першу позицію черги виїзду.
+      </p>
+    </div>
+    <div class="page-num">4</div>
+  </div>
+
+  <!-- ==================== СТОРІНКА 5: РИС. 1 ТА РИС. 2 ==================== -->
+  <div class="sheet">
+    <div class="page-content">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; align-items:start;">
+        <!-- Рис. 1 -->
+        <div class="fig-box" style="margin:0;">
+          <svg viewBox="0 0 320 560" style="width:100%; height:auto;">
+            <defs>
+              <marker id="a1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#000"/>
+              </marker>
+            </defs>
+            <g fill="#fff" stroke="#000" stroke-width="1.2" font-family="Arial, sans-serif" font-size="9.5">
+              <rect x="85" y="8" width="120" height="28" rx="14"/>
+              <text x="145" y="26" text-anchor="middle" stroke="none" fill="#000">Початок сесії</text>
+              <line x1="145" y1="36" x2="145" y2="54" marker-end="url(#a1)"/>
+
+              <rect x="45" y="56" width="200" height="34" rx="5"/>
+              <text x="145" y="71" text-anchor="middle" stroke="none" fill="#000">Отримання токена допуску</text>
+              <text x="145" y="83" text-anchor="middle" stroke="none" fill="#000">екіпажу в штабі ДСНС</text>
+              <line x1="145" y1="90" x2="145" y2="108" marker-end="url(#a1)"/>
+
+              <rect x="45" y="110" width="200" height="32" rx="5"/>
+              <text x="145" y="130" text-anchor="middle" stroke="none" fill="#000">Вибір «Активувати допуск»</text>
+              <line x1="145" y1="142" x2="145" y2="160" marker-end="url(#a1)"/>
+
+              <rect x="45" y="162" width="200" height="36" rx="5"/>
+              <text x="145" y="177" text-anchor="middle" stroke="none" fill="#000">Введення токена, ПІБ командира,</text>
+              <text x="145" y="190" text-anchor="middle" stroke="none" fill="#000">службового e-mail та пароля</text>
+              <line x1="145" y1="198" x2="145" y2="218" marker-end="url(#a1)"/>
+
+              <polygon points="145,220 225,252 145,284 65,252"/>
+              <text x="145" y="249" text-anchor="middle" stroke="none" fill="#000">Валідація Zod</text>
+              <text x="145" y="261" text-anchor="middle" stroke="none" fill="#000">успішна?</text>
+              <text x="234" y="246" stroke="none" fill="#000" font-size="9">ні</text>
+              <polyline points="225,252 290,252 290,180 247,180" fill="none" marker-end="url(#a1)"/>
+
+              <text x="156" y="297" stroke="none" fill="#000" font-size="9">так</text>
+              <line x1="145" y1="284" x2="145" y2="306" marker-end="url(#a1)"/>
+
+              <rect x="45" y="308" width="200" height="34" rx="5"/>
+              <text x="145" y="328" text-anchor="middle" stroke="none" fill="#000">Верифікація токена сервером</text>
+              <line x1="145" y1="342" x2="145" y2="362" marker-end="url(#a1)"/>
+
+              <polygon points="145,364 225,396 145,428 65,396"/>
+              <text x="145" y="393" text-anchor="middle" stroke="none" fill="#000">Токен активний</text>
+              <text x="145" y="405" text-anchor="middle" stroke="none" fill="#000">і вільний?</text>
+              <text x="234" y="390" stroke="none" fill="#000" font-size="9">ні</text>
+              <polyline points="225,396 290,396 290,252" fill="none"/>
+
+              <text x="156" y="441" stroke="none" fill="#000" font-size="9">так</text>
+              <line x1="145" y1="428" x2="145" y2="450" marker-end="url(#a1)"/>
+
+              <rect x="45" y="452" width="200" height="36" rx="5"/>
+              <text x="145" y="468" text-anchor="middle" stroke="none" fill="#000">Прив’язка сектора ІРГ та вхід</text>
+              <text x="145" y="480" text-anchor="middle" stroke="none" fill="#000">до «Оперативної панелі»</text>
+              <line x1="145" y1="488" x2="145" y2="510" marker-end="url(#a1)"/>
+
+              <rect x="85" y="512" width="120" height="28" rx="14"/>
+              <text x="145" y="530" text-anchor="middle" stroke="none" fill="#000">Завершення</text>
+            </g>
+          </svg>
+          <p class="fig-caption">Рис. 1 – Потік користувача «Активація допуску саперного екіпажу»</p>
+        </div>
+
+        <!-- Рис. 2 -->
+        <div class="fig-box" style="margin:0;">
+          <svg viewBox="0 0 340 560" style="width:100%; height:auto;">
+            <g fill="#fff" stroke="#000" stroke-width="1.2" font-family="Arial, sans-serif" font-size="9.5">
+              <rect x="70" y="8" width="120" height="28" rx="14"/>
+              <text x="130" y="26" text-anchor="middle" stroke="none" fill="#000">Початок</text>
+              <line x1="130" y1="36" x2="130" y2="54" marker-end="url(#a1)"/>
+
+              <rect x="35" y="56" width="190" height="34" rx="5"/>
+              <text x="130" y="77" text-anchor="middle" stroke="none" fill="#000">Перехід у «Модуль СППР (Ваги)»</text>
+              <line x1="130" y1="90" x2="130" y2="108" marker-end="url(#a1)"/>
+
+              <rect x="35" y="110" width="190" height="32" rx="5"/>
+              <text x="130" y="130" text-anchor="middle" stroke="none" fill="#000">Клік «+ Зареєструвати сектор»</text>
+              <line x1="130" y1="142" x2="130" y2="160" marker-end="url(#a1)"/>
+
+              <rect x="35" y="162" width="190" height="38" rx="5"/>
+              <text x="130" y="177" text-anchor="middle" stroke="none" fill="#000">Введення шифру, координат,</text>
+              <text x="130" y="190" text-anchor="middle" stroke="none" fill="#000">оцінок k₁..k₅ і граничного порога</text>
+              <line x1="130" y1="200" x2="130" y2="220" marker-end="url(#a1)"/>
+
+              <polygon points="130,222 205,254 130,286 55,254"/>
+              <text x="130" y="251" text-anchor="middle" stroke="none" fill="#000">Параметри</text>
+              <text x="130" y="263" text-anchor="middle" stroke="none" fill="#000">валідні?</text>
+              <text x="212" y="248" stroke="none" fill="#000" font-size="9">ні</text>
+              <polyline points="205,254 255,254 255,180 227,180" fill="none" marker-end="url(#a1)"/>
+
+              <text x="140" y="299" stroke="none" fill="#000" font-size="9">так</text>
+              <line x1="130" y1="286" x2="130" y2="308" marker-end="url(#a1)"/>
+
+              <rect x="35" y="310" width="190" height="36" rx="5"/>
+              <text x="130" y="325" text-anchor="middle" stroke="none" fill="#000">Розрахунок індексу ризику Rᵢ</text>
+              <text x="130" y="338" text-anchor="middle" stroke="none" fill="#000">та пересортування черги СППР</text>
+              <line x1="130" y1="346" x2="130" y2="366" marker-end="url(#a1)"/>
+
+              <polygon points="130,368 205,402 130,436 55,402"/>
+              <text x="130" y="399" text-anchor="middle" stroke="none" fill="#000">Індекс Rᵢ ≥</text>
+              <text x="130" y="411" text-anchor="middle" stroke="none" fill="#000">порога загрози?</text>
+
+              <text x="210" y="396" stroke="none" fill="#000" font-size="9">так</text>
+              <line x1="205" y1="402" x2="232" y2="402" marker-end="url(#a1)"/>
+
+              <rect x="234" y="382" width="102" height="40" rx="5"/>
+              <text x="285" y="399" text-anchor="middle" stroke="none" fill="#000">Генерація тривоги</text>
+              <text x="285" y="412" text-anchor="middle" stroke="none" fill="#000">«Перевищено!»</text>
+              <polyline points="285,422 285,526 192,526" fill="none" marker-end="url(#a1)"/>
+
+              <text x="140" y="452" stroke="none" fill="#000" font-size="9">ні</text>
+              <line x1="130" y1="436" x2="130" y2="510" marker-end="url(#a1)"/>
+
+              <rect x="70" y="512" width="120" height="28" rx="14"/>
+              <text x="130" y="530" text-anchor="middle" stroke="none" fill="#000">Завершення</text>
+            </g>
+          </svg>
+          <p class="fig-caption">Рис. 2 – Потік користувача «Оцінка сектора в модулі СППР»</p>
+        </div>
+      </div>
+    </div>
+    <div class="page-num">5</div>
+  </div>
+
+  <!-- ==================== СТОРІНКА 6: П. 1.3 ТА РИС. 3 ==================== -->
+  <div class="sheet">
+    <div class="page-content">
+      <h2>1.3 Діаграма станів віджета «Верифікація сектора розмінування»</h2>
+      <p>
+        Для опису реактивної поведінки інтерфейсних компонентів використано діаграму кінцевих автоматів (State Machine Diagram) за специфікацією OMG UML 2.5 [[2]]. Об’єктом моделювання обрано центральний інтерактивний елемент платформи — віджет «Картка верифікації сектора КХ-14», який відображає поточний етап гуманітарного очищення ділянки як на екрані сапера, так і в консолі диспетчера штабу. Життєвий цикл цього елемента охоплює сім дискретних станів (рис. 3).
+      </p>
+
+      <div class="fig-box">
+        <svg viewBox="0 0 700 380" style="width:100%; height:auto;">
+          <defs>
+            <marker id="a3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M 0 1 L 10 5 L 0 9 z" fill="#000"/>
+            </marker>
+          </defs>
+          <g fill="#fff" stroke="#000" stroke-width="1.2" font-family="Arial, sans-serif" font-size="10">
+            <circle cx="80" cy="18" r="7" fill="#000"/>
+            <line x1="80" y1="25" x2="80" y2="48" marker-end="url(#a3)"/>
+
+            <rect x="18" y="50" width="135" height="34" rx="6"/>
+            <text x="85" y="71" text-anchor="middle" stroke="none" fill="#000">1. Ініціалізація ГІС</text>
+
+            <line x1="153" y1="67" x2="485" y2="67" marker-end="url(#a3)"/>
+            <text x="320" y="60" text-anchor="middle" stroke="none" fill="#000" font-size="9">[Таймаут геосервера]</text>
+
+            <rect x="487" y="50" width="175" height="34" rx="6"/>
+            <text x="574" y="71" text-anchor="middle" stroke="none" fill="#000">2. Помилка синхронізації</text>
+
+            <polyline points="574,84 574,108 115,108 115,140" fill="none" marker-end="url(#a3)"/>
+            <text x="350" y="102" text-anchor="middle" stroke="none" fill="#000" font-size="9">Повторити синхронізацію [200 OK]</text>
+
+            <line x1="65" y1="84" x2="65" y2="140" marker-end="url(#a3)"/>
+            <text x="60" y="118" text-anchor="end" stroke="none" fill="#000" font-size="9">[Геодані завантажено]</text>
+
+            <rect x="18" y="142" width="150" height="38" rx="6"/>
+            <text x="93" y="159" text-anchor="middle" stroke="none" fill="#000">3. Первинне звернення</text>
+            <text x="93" y="172" text-anchor="middle" stroke="none" fill="#000">(Необстежено)</text>
+
+            <!-- Складений стан польових робіт -->
+            <rect x="245" y="122" width="435" height="165" rx="8" fill="#f8fafc"/>
+            <line x1="245" y1="145" x2="680" y2="145"/>
+            <text x="462" y="138" text-anchor="middle" font-weight="bold" stroke="none" fill="#000">Польова фаза технічного обстеження та розмінування</text>
+
+            <line x1="168" y1="160" x2="262" y2="160" marker-end="url(#a3)"/>
+            <text x="206" y="154" text-anchor="middle" stroke="none" fill="#000" font-size="8.5">Виліт дрона</text>
+
+            <rect x="265" y="158" width="160" height="36" rx="6" fill="#fff"/>
+            <text x="345" y="174" text-anchor="middle" stroke="none" fill="#000">4. Аеророзвідка та</text>
+            <text x="345" y="186" text-anchor="middle" stroke="none" fill="#000">магнітометрія БПЛА</text>
+
+            <line x1="425" y1="176" x2="495" y2="176" marker-end="url(#a3)"/>
+            <text x="460" y="170" text-anchor="middle" stroke="none" fill="#000" font-size="8.5">Ранг СППР #1</text>
+
+            <rect x="497" y="158" width="165" height="36" rx="6" fill="#fff"/>
+            <text x="580" y="174" text-anchor="middle" stroke="none" fill="#000">5. Активне очищення</text>
+            <text x="580" y="186" text-anchor="middle" stroke="none" fill="#000">(Armtrac-400 + ІРГ)</text>
+
+            <line x1="560" y1="194" x2="560" y2="232" marker-end="url(#a3)"/>
+            <text x="554" y="216" text-anchor="end" stroke="none" fill="#000" font-size="8.5">[Сейсмопастка ПФМ-1С]</text>
+
+            <line x1="610" y1="234" x2="610" y2="196" marker-end="url(#a3)"/>
+            <text x="616" y="216" text-anchor="start" stroke="none" fill="#000" font-size="8.5">Підрив ВНП</text>
+
+            <rect x="497" y="234" width="165" height="38" rx="6" fill="#fff"/>
+            <text x="580" y="251" text-anchor="middle" stroke="none" fill="#000">6. Критична загроза:</text>
+            <text x="580" y="263" text-anchor="middle" stroke="none" fill="#000">мінна пастка (Стоп!)</text>
+
+            <!-- Перехід до Сертифіковано -->
+            <line x1="462" y1="287" x2="462" y2="328" marker-end="url(#a3)"/>
+            <text x="470" y="312" text-anchor="start" stroke="none" fill="#000" font-size="9">[Площа очищена на 100%, контроль якості пройдено]</text>
+
+            <rect x="330" y="330" width="265" height="36" rx="6"/>
+            <text x="462" y="352" text-anchor="middle" font-weight="bold" stroke="none" fill="#000">7. Очищено та сертифіковано (Акт передачі)</text>
+          </g>
+        </svg>
+        <p class="fig-caption">Рис. 3 – UML-діаграма станів віджета «Верифікація сектора розмінування»</p>
+      </div>
+
+      <p>
+        На старті сесії віджет перебуває у стані «Ініціалізація ГІС» і рендерить анімований скелетон. При збої мережі відбувається перехід у стан «Помилка синхронізації». Коли геодані отримано, новостворена ділянка має статус «Первинне звернення (Необстежено)». Запуск безпілотника переводить об’єкт у складний стан польової фази: спершу виконується «Аеророзвідка БПЛА», далі за рішенням СППР розпочинається «Активне очищення». У разі виявлення неконтактних мін-пасток спрацьовує блокувальний стан тривоги «Критична загроза», а після успішного знищення всіх ВНП сектор переходить у фінальний стан «Очищено та сертифіковано».
+      </p>
+    </div>
+    <div class="page-num">6</div>
+  </div>
+
+
+  <!-- ==================== СТОРІНКА 7: РИС. 4 (7 СТАНІВ ВІДЖЕТА) ==================== -->
+  <div class="sheet">
+    <div class="page-content">
+      <p>
+        Логіку переходів реалізовано через детермінований редьюсер станів, що виключає появу суперечливих індикаторів в інтерфейсі. Візуальне представлення віджета в усіх семи станах наведено на рис. 4, а формальні умови переходів систематизовано в табл. 2.
+      </p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-family:Arial, sans-serif; font-size:9.5px; margin-top:8pt;">
+        <!-- 1 -->
+        <div>
+          <div style="border:1px solid #d6d3d1; border-radius:8px; padding:11px; background:#fff; height:102px;">
+            <div style="width:95px; height:7px; background:#e7e5e4; border-radius:3px; margin-bottom:10px;"></div>
+            <div style="width:190px; height:12px; background:#e7e5e4; border-radius:3px; margin-bottom:8px;"></div>
+            <div style="width:240px; height:8px; background:#f5f5f4; border-radius:3px;"></div>
+          </div>
+          <div style="text-align:center; margin-top:3px; font-family:'Times New Roman'; font-size:11pt;">а) Ініціалізація ГІС-шару</div>
+        </div>
+
+        <!-- 2 -->
+        <div>
+          <div style="border:1px solid #d6d3d1; border-radius:8px; padding:11px; background:#fff; height:102px;">
+            <div style="font-size:8px; color:#78716c; font-weight:bold;">СТАТУС СЕКТОРА КХ-14</div>
+            <div style="font-weight:bold; font-size:11px; margin:2px 0;">Зв’язок із геосервером втрачено</div>
+            <div style="color:#78716c; font-size:8.5px; margin-bottom:7px;">Не вдалося завантажити телеметрію. Перевірте канал.</div>
+            <span style="background:#059669; color:#fff; padding:3px 8px; border-radius:4px; font-size:8.5px; font-weight:bold;">Повторити синхронізацію</span>
+          </div>
+          <div style="text-align:center; margin-top:3px; font-family:'Times New Roman'; font-size:11pt;">б) Помилка синхронізації</div>
+        </div>
+
+        <!-- 3 -->
+        <div>
+          <div style="border:1px solid #d6d3d1; border-radius:8px; padding:10px; background:#fff;">
+            <div style="display:flex; justify-content:space-between;"><span style="font-size:8px; color:#78716c; font-weight:bold;">КАРТКА СЕКТОРА КХ-14</span><span style="background:#e0f2fe; color:#0369a1; padding:1px 5px; border-radius:4px; font-size:8px; font-weight:bold;">чернетка</span></div>
+            <div style="font-weight:bold; font-size:10.5px; margin:2px 0;">Первинне звернення (Необстежено)</div>
+            <div style="color:#78716c; font-size:8.5px; margin-bottom:6px;">Зареєстровано за заявкою громади. Очікує розвідки.</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px; border-top:1px solid #f5f5f4; padding-top:5px; font-size:8px;">
+              <div>БПЛА-скан <b>15%</b><div style="height:4px; background:#0d9488; width:20%; margin-top:2px;"></div></div>
+              <div>Ресурс ІРГ <b>100%</b><div style="height:4px; background:#059669; margin-top:2px;"></div></div>
+              <div>Виявлено ВНП<br/><b>0 од.</b></div>
+            </div>
+          </div>
+          <div style="text-align:center; margin-top:3px; font-family:'Times New Roman'; font-size:11pt;">в) Первинне звернення</div>
+        </div>
+
+        <!-- 4 -->
+        <div>
+          <div style="border:1px solid #d6d3d1; border-radius:8px; padding:10px; background:#fff;">
+            <div style="display:flex; justify-content:space-between;"><span style="font-size:8px; color:#78716c; font-weight:bold;">КАРТКА СЕКТОРА КХ-14</span><span style="background:#fef3c7; color:#92400e; padding:1px 5px; border-radius:4px; font-size:8px; font-weight:bold;">сканування</span></div>
+            <div style="font-weight:bold; font-size:10.5px; margin:2px 0;">Аеророзвідка та магнітометрія БПЛА</div>
+            <div style="color:#78716c; font-size:8.5px; margin-bottom:6px;">Дрон-магнітометр будує теплову карту аномалій.</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px; border-top:1px solid #f5f5f4; padding-top:5px; font-size:8px;">
+              <div>БПЛА-скан <b>68%</b><div style="height:4px; background:#0d9488; width:68%; margin-top:2px;"></div></div>
+              <div>Ресурс ІРГ <b>100%</b><div style="height:4px; background:#059669; margin-top:2px;"></div></div>
+              <div>Виявлено ВНП<br/><b>14 од.</b></div>
+            </div>
+          </div>
+          <div style="text-align:center; margin-top:3px; font-family:'Times New Roman'; font-size:11pt;">г) Аеророзвідка БПЛА</div>
+        </div>
+
+        <!-- 5 -->
+        <div>
+          <div style="border:1px solid #d6d3d1; border-radius:8px; padding:10px; background:#fff;">
+            <div style="display:flex; justify-content:space-between;"><span style="font-size:8px; color:#78716c; font-weight:bold;">КАРТКА СЕКТОРА КХ-14</span><span style="background:#d1fae5; color:#065f46; padding:1px 5px; border-radius:4px; font-size:8px; font-weight:bold;">робота в полі</span></div>
+            <div style="font-weight:bold; font-size:10.5px; margin:2px 0;">Активне розмінування за СППР (#1)</div>
+            <div style="color:#78716c; font-size:8.5px; margin-bottom:6px;">Екіпаж ІРГ-04 та машина Armtrac-400 очищують сектор.</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px; border-top:1px solid #f5f5f4; padding-top:5px; font-size:8px;">
+              <div>БПЛА-скан <b>100%</b><div style="height:4px; background:#0d9488; margin-top:2px;"></div></div>
+              <div>Ресурс ІРГ <b>84%</b><div style="height:4px; background:#059669; width:84%; margin-top:2px;"></div></div>
+              <div>Виявлено ВНП<br/><b>47 од.</b></div>
+            </div>
+          </div>
+          <div style="text-align:center; margin-top:3px; font-family:'Times New Roman'; font-size:11pt;">д) Активне розмінування</div>
+        </div>
+
+        <!-- 6 -->
+        <div>
+          <div style="border:1.5px solid #dc2626; border-radius:8px; padding:10px; background:#fff;">
+            <div style="display:flex; justify-content:space-between;"><span style="font-size:8px; color:#dc2626; font-weight:bold;">КАРТКА СЕКТОРА КХ-14</span><span style="background:#ffe4e6; color:#9f1239; padding:1px 5px; border-radius:4px; font-size:8px; font-weight:bold;">небезпека</span></div>
+            <div style="font-weight:bold; font-size:10.5px; color:#dc2626; margin:2px 0;">Критична загроза: мінна пастка!</div>
+            <div style="color:#78716c; font-size:8.5px; margin-bottom:6px;">Виявлено касетні міни ПФМ-1С із сейсмодатчиками.</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px; border-top:1px solid #f5f5f4; padding-top:5px; font-size:8px;">
+              <div>БПЛА-скан <b>100%</b><div style="height:4px; background:#0d9488; margin-top:2px;"></div></div>
+              <div>Ресурс ІРГ <b>18%</b><div style="height:4px; background:#dc2626; width:20%; margin-top:2px;"></div></div>
+              <div>Виявлено ВНП<br/><b>63 од.</b></div>
+            </div>
+          </div>
+          <div style="text-align:center; margin-top:3px; font-family:'Times New Roman'; font-size:11pt;">е) Критична мінна загроза</div>
+        </div>
+
+        <!-- 7 -->
+        <div style="grid-column: span 2; width:50%; margin:0 auto;">
+          <div style="border:1px solid #059669; border-radius:8px; padding:10px; background:#f0fdf4;">
+            <div style="display:flex; justify-content:space-between;"><span style="font-size:8px; color:#065f46; font-weight:bold;">КАРТКА СЕКТОРА КХ-14</span><span style="background:#10b981; color:#fff; padding:1px 5px; border-radius:4px; font-size:8px; font-weight:bold;">безпечно</span></div>
+            <div style="font-weight:bold; font-size:10.5px; color:#065f46; margin:2px 0;">✓ Очищено та сертифіковано (Акт передачі)</div>
+            <div style="color:#047857; font-size:8.5px;">Контроль якості завершено. Ділянку передано громаді.</div>
+          </div>
+          <div style="text-align:center; margin-top:3px; font-family:'Times New Roman'; font-size:11pt;">ж) Очищено та сертифіковано</div>
+        </div>
+      </div>
+
+      <p class="fig-caption">Рис. 4 – Візуальні стани віджета «Картка верифікації сектора КХ-14»</p>
+    </div>
+    <div class="page-num">7</div>
+  </div>
+
+  <!-- ==================== СТОРІНКА 8: ТАБЛ. 2 ТА П. 1.4 ==================== -->
+  <div class="sheet">
+    <div class="page-content">
+      <p class="table-title">Таблиця 2 – Специфікація станів віджета верифікації сектора</p>
+      <table class="doc-table">
+        <thead>
+          <tr>
+            <th style="width:25%;">Назва стану</th>
+            <th style="width:35%;">Тригер / Умова переходу</th>
+            <th style="width:40%;">Візуальне відображення в UI</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1. Ініціалізація ГІС</td>
+            <td>Триває початковий HTTP-запит за координатами полігона</td>
+            <td>Пульсуючі сірі плейсхолдери (Skeleton UI)</td>
+          </tr>
+          <tr>
+            <td>2. Помилка синхронізації</td>
+            <td>Відповідь сервера зі статусом 5xx або розрив з’єднання</td>
+            <td>Повідомлення про збій і смарагдова кнопка «Повторити синхронізацію»</td>
+          </tr>
+          <tr>
+            <td>3. Первинне звернення</td>
+            <td>phase = unverified (заявка від громади внесена в реєстр)</td>
+            <td>Блакитний бейдж «чернетка», прогрес сканування 15%</td>
+          </tr>
+          <tr>
+            <td>4. Аеророзвідка БПЛА</td>
+            <td>phase = uav_scan (запущено дрон-магнітометр)</td>
+            <td>Бурштиновий індикатор «сканування», лічильник знайдених аномалій</td>
+          </tr>
+          <tr>
+            <td>5. Активне очищення</td>
+            <td>phase = dss_active (сектор отримав ранг #1 у СППР)</td>
+            <td>Смарагдовий бейдж «робота в полі», шкала ресурсу групи ІРГ-04</td>
+          </tr>
+          <tr>
+            <td>6. Критична загроза</td>
+            <td>phase = critical_hazard (виявлено сейсмодатчик / пастку)</td>
+            <td>Червона рамка тривоги (ARIA role="alert"), зупинка техніки</td>
+          </tr>
+          <tr>
+            <td>7. Очищено та сертифіковано</td>
+            <td>phase = certified (100% площі перевірено, акт підписано)</td>
+            <td>Зелений фон картки, напис «Безпечно» та зняття з черги СППР</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>1.4 Архітектурна організація клієнтського застосунку</h2>
+      <p>
+        Клієнтську частину реалізовано за архітектурою Single Page Application (SPA) з модульним поділом за принципом Feature-Sliced Design:
+      </p>
+      <ul>
+        <li><b>core/</b> — конфігурація маршрутизатора, глобальні провайдери теми, захисники маршрутів за роллю (Аналітик / Диспетчер) та базовий каркас сторінки з темною тактичною навігацією;</li>
+        <li><b>modules/</b> — функціональні домени системи (модуль інтерактивної карти Leaflet, матриця багатокритеріальної оптимізації СППР, модуль прогнозування темпів розмінування, журнал виїздів, генератор PDF/CSV-актів, консоль диспетчера штабу);</li>
+        <li><b>shared/</b> — типізовані контракти даних TypeScript, математичні функції обчислення індексу ризику та довірчих інтервалів, утиліти санітизації DOMPurify, атомарні UI-компоненти;</li>
+        <li><b>server-mock/</b> — імітатор геоінформаційного REST API на базі перехоплювача запитів із персистентним збереженням стану в <code>localStorage</code>.</li>
+      </ul>
+      <p>
+        Завдяки ізоляції мережевого шару компоненти інтерфейсу взаємодіють виключно з типізованими хуками даних, що дозволяє замінити мок-сервер на промисловий бекенд ДСНС без жодних правок у коді представлення.
+      </p>
+    </div>
+    <div class="page-num">8</div>
+  </div>
+
+  <!-- ==================== СТОРІНКА 9: РОЗДІЛ 2 (2.1, 2.2) ==================== -->
+  <div class="sheet">
+    <div class="page-content">
+      <h1>РОЗДІЛ 2 ПРОГРАМНА РЕАЛІЗАЦІЯ</h1>
+      <h2>2.1 Обґрунтування вибору програмного стеку</h2>
+      <p>
+        Основою клієнтської частини обрано бібліотеку React 18 [[3]] у поєднанні зі статичною типізацією TypeScript [[4]]. Такий вибір обумовлений необхідністю синхронного оновлення векторних шарів ГІС-карти та аналітичних таблиць під час руху повзунків вагових коефіцієнтів СППР без перезавантаження DOM-дерева. Збирання та оптимізацію бандла забезпечує інструмент Vite [[5]]. Повний перелік застосованих інженерних рішень подано в табл. 3.
+      </p>
+
+      <p class="table-title">Таблиця 3 – Інструментальний стек проєкту «Контур-СППР»</p>
+      <table class="doc-table">
+        <thead>
+          <tr>
+            <th style="width:25%;">Підсистема</th>
+            <th style="width:27%;">Бібліотека / Інструмент</th>
+            <th style="width:48%;">Призначення в архітектурі СППР</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Ядро інтерфейсу</td>
+            <td>React 18 + TypeScript [[3], [4]]</td>
+            <td>Побудова реактивних компонентів, мемоізація розрахунків черги СППР (useMemo), суворі контракти типів</td>
+          </tr>
+          <tr>
+            <td>Клієнтський роутинг</td>
+            <td>React Router v6 [[6]]</td>
+            <td>Розмежування робочих просторів аналітика ІРГ та диспетчера штабу, захист приватних маршрутів</td>
+          </tr>
+          <tr>
+            <td>Керування серверним станом</td>
+            <td>TanStack Query [[7]]</td>
+            <td>Фонове опитування телеметрії БПЛА, кешування геоданих, автоматичний повтор запитів при збоях зв’язку</td>
+          </tr>
+          <tr>
+            <td>Стилізація та адаптивність</td>
+            <td>Tailwind CSS [[8]]</td>
+            <td>Побудова адаптивної сітки, стилізація темної тактичної панелі та друкованих медіа-запитів @media print</td>
+          </tr>
+          <tr>
+            <td>ГІС та візуалізація</td>
+            <td>Leaflet API + SVG Charts [[9]]</td>
+            <td>Відмальовування полігонів замінованих ділянок на карті Esri Topo, графіки довірчих інтервалів прогнозу</td>
+          </tr>
+          <tr>
+            <td>Валідація форм</td>
+            <td>React Hook Form + Zod [[10]]</td>
+            <td>Перевірка координат полігонів, діапазонів критеріїв (1–10 балів) та форматів токенів допуску</td>
+          </tr>
+          <tr>
+            <td>Імітація REST API</td>
+            <td>Mock Service Worker [[11]]</td>
+            <td>Перехоплення HTTP-запитів у браузері, емуляція затримок мережі та збереження реєстру в localStorage</td>
+          </tr>
+          <tr>
+            <td>Захист і звіти</td>
+            <td>DOMPurify, CSV/PDF модуль</td>
+            <td>Вирізання XSS-скриптів у директивах штабу, формування друкованих актів і таблиць Excel</td>
+          </tr>
+          <tr>
+            <td>Верифікація якості</td>
+            <td>Vitest, Playwright</td>
+            <td>Модульне тестування математичного ядра СППР та наскрізні E2E-сценарії у браузерних рушіях</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>2.2 Клієнт-серверний обмін та імітація геосервера</h2>
+      <p>
+        Оскільки проєкт сфокусовано на розробці фронтенд-складової, взаємодію з бекендом реалізовано через сервісний шар Mock Service Worker [[11]]. Усі виклики до ендпоінтів <code>/api/v1/sectors</code>, <code>/api/v1/crews</code> та <code>/api/v1/directives</code> проходять крізь єдиний клієнтський адаптер, який додає заголовок авторизації Bearer та обробляє коди відповідей HTTP. Усі внесені аналітиком зміни (нові сектори, змінені пороги небезпеки, згенеровані токени екіпажів) серіалізуються у сховище браузера, забезпечуючи збереження даних між сесіями.
+      </p>
+    </div>
+    <div class="page-num">9</div>
+  </div>
+
+  <!-- ==================== СТОРІНКА 10: РОЗДІЛ 2 (2.3, 2.4) ==================== -->
+  <div class="sheet">
+    <div class="page-content">
+      <h2>2.3 Математична модель СППР та інтервальне прогнозування</h2>
+      <p>
+        Математичне ядро системи поєднує дві моделі: багатокритеріальне ранжування небезпечних ділянок та статистичне прогнозування темпів їх очищення [[12]]. Для кожної ділянки <i>i</i> фіксується вектор із п’яти експертних критеріїв <i>k<sub>ij</sub></i> ∈ [1; 10]: критичність інфраструктури (<i>j</i> = 1), густота населення поруч (<i>j</i> = 2), аграрна цінність (<i>j</i> = 3), складність мінного забруднення (<i>j</i> = 4) та частота підривів (<i>j</i> = 5). Інтегральний індекс ризику <i>R<sub>i</sub></i> ∈ [0; 100] обчислюється за методом зваженої лінійної згортки (WLC / Сааті):
+      </p>
+      <div class="formula-row">
+        <span><i>R<sub>i</sub> = 100 · ∑<sub>j=1..5</sub> ( w<sub>j</sub> / ∑w ) · ( k<sub>ij</sub> / 10 )</i>,</span>
+        <span>(1)</span>
+      </div>
+      <p class="no-indent">
+        де <i>w<sub>j</sub></i> — вагова значущість <i>j</i>-го критерію, яку аналітик задає повзунками в інтерфейсі. Сектори автоматично впорядковуються за спаданням <i>R<sub>i</sub></i>, формуючи оперативну чергу виїзду ІРГ.
+      </p>
+      <p>
+        Для оцінки очікуваної площі розмінування до кінця місяця <i>S<sub>prog</sub></i> використано адаптивну модель тренду з урахуванням продуктивності комплексів Armtrac-400 та ручних груп за попередні зміни:
+      </p>
+      <div class="formula-row">
+        <span><i>S<sub>prog</sub> = S<sub>fact</sub> + d<sub>rem</sub> · ( β · v<sub>mech</sub> + (1 − β) · v<sub>sap</sub> )</i>,</span>
+        <span>(2)</span>
+      </div>
+      <p class="no-indent">
+        де <i>S<sub>fact</sub></i> — фактично очищена площа з початку місяця, га; <i>d<sub>rem</sub></i> — кількість робочих змін, що залишились; <i>v<sub>mech</sub></i>, <i>v<sub>sap</sub></i> — середня добова продуктивність механізованих і піротехнічних розрахунків; <i>β</i> = 0,72 — коефіцієнт залучення спецтехніки. Межі 90-відсоткового довірчого інтервалу прогнозу для залишкової дисперсії добового виробітку <i>σ<sub>s</sub></i> визначаються за формулою:
+      </p>
+      <div class="formula-row">
+        <span><i>S<sub>min, max</sub> = S<sub>prog</sub> ± z<sub>0,90</sub> · σ<sub>s</sub> · √d<sub>rem</sub></i>,</span>
+        <span>(3)</span>
+      </div>
+      <p class="no-indent">
+        де <i>z</i><sub>0,90</sub> = 1,645 — квантиль стандартного нормального розподілу для рівня надійності 90 %.
+      </p>
+
+      <h2>2.4 Адаптивна верстка для польових планшетів і смартфонів</h2>
+      <p>
+        Оскільки командири саперних груп працюють із системою безпосередньо в полі зі захищених планшетів та смартфонів, інтерфейс спроєктовано за методологією Mobile-First. На широких екранах штабних моніторів (від 1024 px) застосовується двоколонковий макет із постійною темною навігаційною панеллю зліва (240 px). На мобільних екранах (до 1024 px) бічна панель ховається, поступаючись місцем компактній нижній панелі швидкого перемикання розділів, картки KPI перебудовуються у двоколонкову сітку, а таблиці отримують ізольоване горизонтальне прокручування (рис. 5).
+      </p>
+    </div>
+    <div class="page-num">10</div>
+  </div>
+
+  <!-- ==================== СТОРІНКА 11: РИС. 5 ТА П. 2.5 ==================== -->
+  <div class="sheet">
+    <div class="page-content">
+      <!-- Рис. 5: Мобільні екрани 390px у фірмовому стилі Контур-СППР -->
+      <div class="fig-box">
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; font-family:Arial, sans-serif; font-size:8.5px; text-align:left;">
+          <!-- Моб. 1 -->
+          <div>
+            <div style="border:2px solid #334155; border-radius:14px; overflow:hidden; background:#f5f5f4;">
+              <div style="background:#0f172a; color:#fff; padding:6px 8px; display:flex; justify-content:space-between; font-weight:bold;">
+                <span>🧭 КОНТУР-СППР</span><span style="color:#34d399;">ІРГ-02</span>
+              </div>
+              <div style="padding:7px;">
+                <div style="font-weight:bold; font-size:10px; margin-bottom:4px;">Оперативна панель</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; margin-bottom:5px;">
+                  <div style="background:#fff; border-left:3px solid #e11d48; padding:4px; border-radius:4px;">Індекс СППР<br/><b style="font-size:10px;">91,4 бала</b></div>
+                  <div style="background:#fff; border-left:3px solid #059669; padding:4px; border-radius:4px;">Очищено<br/><b style="font-size:10px;">63,5 га</b></div>
+                  <div style="background:#fff; border-left:3px solid #d97706; padding:4px; border-radius:4px;">Знешкоджено<br/><b style="font-size:10px;">312 ВНП</b></div>
+                  <div style="background:#fff; border-left:3px solid #0d9488; padding:4px; border-radius:4px;">Прогноз<br/><b style="font-size:10px;">146,8 га</b></div>
+                </div>
+                <div style="background:#fff; border:1px solid #d6d3d1; border-radius:5px; padding:5px; margin-bottom:5px;">
+                  <span style="background:#d1fae5; color:#065f46; font-size:7px; padding:1px 4px; border-radius:3px; font-weight:bold;">робота в полі</span>
+                  <div style="font-weight:bold; margin-top:2px;">Сектор КХ-14 (Armtrac-400)</div>
+                </div>
+                <div style="background:#d6d3d1; height:52px; border-radius:5px; display:flex; align-items:center; justify-content:center; color:#44403c; font-weight:bold;">
+                  [Інтерактивна карта ГІС]
+                </div>
+              </div>
+              <div style="background:#0f172a; color:#94a3b8; padding:5px; display:flex; justify-content:space-around; font-size:7.5px;">
+                <span style="color:#34d399; font-weight:bold;">Панель</span><span>СППР</span><span>Прогноз</span><span>Реєстр</span>
+              </div>
+            </div>
+            <div style="text-align:center; margin-top:4px; font-family:'Times New Roman'; font-size:11pt;">а) Оперативна панель</div>
+          </div>
+
+          <!-- Моб. 2 -->
+          <div>
+            <div style="border:2px solid #334155; border-radius:14px; overflow:hidden; background:#f5f5f4;">
+              <div style="background:#0f172a; color:#fff; padding:6px 8px; display:flex; justify-content:space-between; font-weight:bold;">
+                <span>🧭 КОНТУР-СППР</span><span style="color:#34d399;">ІРГ-02</span>
+              </div>
+              <div style="padding:7px;">
+                <div style="font-weight:bold; font-size:10px; margin-bottom:4px;">Модуль СППР (Ваги)</div>
+                <div style="background:#fff; border:1px solid #d6d3d1; border-radius:5px; padding:5px; margin-bottom:5px;">
+                  <div style="display:flex; justify-content:space-between;"><span>Інфраструктура (w₁)</span><b style="color:#059669;">32%</b></div>
+                  <div style="height:4px; background:#059669; width:65%; border-radius:2px; margin:2px 0 4px 0;"></div>
+                  <div style="display:flex; justify-content:space-between;"><span>Населення (w₂)</span><b style="color:#059669;">26%</b></div>
+                  <div style="height:4px; background:#059669; width:52%; border-radius:2px; margin-top:2px;"></div>
+                </div>
+                <div style="background:#fff; border:1px solid #d6d3d1; border-radius:5px; padding:5px; margin-bottom:4px;">
+                  <div style="display:flex; justify-content:space-between;"><b>[КХ-14] Водогін</b><span style="color:#e11d48; font-weight:bold;">91,4 / 80</span></div>
+                  <div style="height:4px; background:#e11d48; border-radius:2px; margin-top:3px;"></div>
+                </div>
+                <div style="background:#fff; border:1px solid #d6d3d1; border-radius:5px; padding:5px;">
+                  <div style="display:flex; justify-content:space-between;"><b>[ЧН-08] Ліцей</b><span style="color:#059669; font-weight:bold;">72,0 / 75</span></div>
+                  <div style="height:4px; background:#059669; width:82%; border-radius:2px; margin-top:3px;"></div>
+                </div>
+              </div>
+              <div style="background:#0f172a; color:#94a3b8; padding:5px; display:flex; justify-content:space-around; font-size:7.5px;">
+                <span>Панель</span><span style="color:#34d399; font-weight:bold;">СППР</span><span>Прогноз</span><span>Реєстр</span>
+              </div>
+            </div>
+            <div style="text-align:center; margin-top:4px; font-family:'Times New Roman'; font-size:11pt;">б) Матриця ваг СППР</div>
+          </div>
+
+          <!-- Моб. 3 -->
+          <div>
+            <div style="border:2px solid #334155; border-radius:14px; overflow:hidden; background:#f5f5f4;">
+              <div style="background:#0f172a; color:#fff; padding:6px 8px; display:flex; justify-content:space-between; font-weight:bold;">
+                <span>🧭 КОНТУР-СППР</span><span style="color:#34d399;">ІРГ-02</span>
+              </div>
+              <div style="padding:7px;">
+                <div style="font-weight:bold; font-size:10px; margin-bottom:4px;">Динаміка і прогноз</div>
+                <div style="background:#fff; border:1px solid #d6d3d1; border-radius:5px; padding:5px; margin-bottom:5px;">
+                  <div style="font-weight:bold; font-size:8px; margin-bottom:3px;">Добовий виробіток (га)</div>
+                  <div style="display:flex; align-items:flex-end; gap:4px; height:48px; padding-top:6px;">
+                    <div style="flex:1; background:#059669; height:30px;"></div>
+                    <div style="flex:1; background:#0d9488; height:38px;"></div>
+                    <div style="flex:1; background:#059669; height:44px;"></div>
+                    <div style="flex:1; background:#d97706; height:26px;"></div>
+                    <div style="flex:1; background:#059669; height:40px;"></div>
+                  </div>
+                </div>
+                <div style="background:#fff; border:1px solid #d6d3d1; border-radius:5px; padding:5px;">
+                  <div style="font-weight:bold; font-size:8px;">Інтервал 90% (z = 1,645):</div>
+                  <div style="color:#047857; font-weight:bold; font-size:9.5px; margin-top:2px;">138,2 га – 155,4 га</div>
+                </div>
+              </div>
+              <div style="background:#0f172a; color:#94a3b8; padding:5px; display:flex; justify-content:space-around; font-size:7.5px;">
+                <span>Панель</span><span>СППР</span><span style="color:#34d399; font-weight:bold;">Прогноз</span><span>Реєстр</span>
+              </div>
+            </div>
+            <div style="text-align:center; margin-top:4px; font-family:'Times New Roman'; font-size:11pt;">в) Прогноз очищення</div>
+          </div>
+        </div>
+        <p class="fig-caption">Рис. 5 – Адаптивне відображення платформи «Контур-СППР» на смартфоні (390 px)</p>
+      </div>
+
+      <h2>2.5 Забезпечення кросбраузерної сумісності</h2>
+      <p>
+        Конфігурація цільових середовищ виконання визначена через специфікацію <code>browserslist</code> у файлі <code>package.json</code>. Збирання Vite транспілює сучасні конструкції TypeScript у сумісний стандарт ES2020 та автоматично додає вендорні префікси PostCSS. Коректність рендерингу картографічних шарів, SVG-діаграм і модальних форм перевірено в чотирьох браузерних рушіях за допомогою фреймворку Playwright [[13]] (табл. 4).
+      </p>
+
+      <p class="table-title">Таблиця 4 – Протокол кросбраузерного тестування платформи</p>
+      <table class="doc-table">
+        <thead>
+          <tr>
+            <th>Середовище / Браузерний рушій</th>
+            <th>Методика верифікації</th>
+            <th>Підсумок проходження</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Google Chrome 130 / MS Edge (Blink)</td>
+            <td>16 автоматизованих E2E-сценаріїв Playwright</td>
+            <td>100 % успішно (0 помилок)</td>
+          </tr>
+          <tr>
+            <td>Apple Safari / WebKit (Desktop &amp; iOS)</td>
+            <td>16 автоматизованих E2E-сценаріїв Playwright</td>
+            <td>100 % успішно (0 помилок)</td>
+          </tr>
+          <tr>
+            <td>Мобільний емулятор (390×844 px)</td>
+            <td>Автоматизована перевірка відсутності гор. скролу</td>
+            <td>100 % успішно (адаптивно)</td>
+          </tr>
+          <tr>
+            <td>Mozilla Firefox (Gecko)</td>
+            <td>Ручне тестування всіх маршрутів та експорту звітів</td>
+            <td>Відхилень у верстці не виявлено</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="page-num">11</div>
+  </div>
+
+  <!-- ==================== СТОРІНКА 12: РОЗДІЛ 2 (2.6, 2.7, 2.8, 2.9) ==================== -->
+  <div class="sheet">
+    <div class="page-content">
+      <h2>2.6 Механізми інформаційної безпеки</h2>
+      <p>
+        Оскільки система оперує координатами критичної інфраструктури та маршрутами саперних груп, на клієнтському рівні впроваджено багаторівневий контур захисту:
+      </p>
+      <ul>
+        <li><b>Захист сесійних токенів:</b> JWT-токен авторизації зберігається виключно в замиканні оперативної пам’яті застосунку, що унеможливлює його викрадення через локальне сховище браузера.</li>
+        <li><b>Контроль ролей (RBAC):</b> маршрути диспетчера штабу захищені компонентом вищого порядку <code>RoleGuard</code>; при спробі прямого переходу за URL без прав штабу виконується блокування доступу.</li>
+        <li><b>Протидія Brute-force атакам:</b> після п’яти помилкових спроб введення пароля форма авторизації блокується таймером зворотного відліку на 30 секунд.</li>
+        <li><b>Санітизація XSS у директивах штабу:</b> перед рендерингом форматованих повідомлень диспетчера рядок проходить крізь фільтр DOMPurify [[14]] відповідно до рекомендацій OWASP [[15]], який видаляє теги <code>&lt;script&gt;</code>, <code>&lt;iframe&gt;</code> та обробники подій <code>onerror/onload</code>.</li>
+        <li><b>Політика Content Security Policy (CSP):</b> заголовок CSP [[16]] обмежує завантаження скриптів і стилів лише перевіреними джерелами.</li>
+        <li><b>Захист від CSV-ін’єкцій:</b> під час вивантаження звіту для Excel усі текстові поля, що починаються зі спецсимволів <code>=</code>, <code>+</code>, <code>-</code> або <code>@</code>, автоматично екрануються апострофом.</li>
+      </ul>
+
+      <h2>2.7 Ергономіка та доступність інтерфейсу (UX / WCAG)</h2>
+      <p>
+        Інтерфейс спроєктовано з дотриманням настанов доступності WCAG 2.2 [[17]]: контрастність тексту на темній тактичній панелі та бейджах перевищує коефіцієнт 4.5:1; кожен візуальний графік має миттєвий перемикач у табличне представлення для скрінрідерів; критичні стани мінної загрози розмічені атрибутом <code>role="alert"</code>; реалізовано повноцінну навігацію клавішею <code>Tab</code>, миттєві Toast-сповіщення та перемикання між денним і нічним тактичним режимами.
+      </p>
+
+      <h2>2.8 Автоматизоване тестування</h2>
+      <p>
+        Математичне ядро та чисті функції покрито <b>38 модульними тестами у 7 тестових наборах на Vitest</b> [[18]]: перевіряється нормалізація ваг СППР, точність розрахунку індексу <i>R<sub>i</sub></i>, побудова 90-відсоткового інтервалу прогнозу, санітизація XSS-вставок, екранування CSV та переходи автомата станів сектора. Наскрізне тестування інтерфейсу охоплює <b>16 інтеграційних сценаріїв на Playwright</b> [[13]] у трьох віконних профілях.
+      </p>
+
+      <h2>2.9 Репозиторій вихідного коду</h2>
+      <p>
+        Вихідний код проєкту, модульні тести та супровідні діаграми розміщено у відкритому Git-репозиторії: <a href="https://github.com/Sasha7543/kontur-sppr-stem" style="color:#000; text-decoration:underline;"><code>https://github.com/Sasha7543/kontur-sppr-stem</code></a> (розгорнутий онлайн-інтерфейс GitHub Pages: <a href="https://sasha7543.github.io/kontur-sppr-stem/" style="color:#000; text-decoration:underline;"><code>https://sasha7543.github.io/kontur-sppr-stem/</code></a>).
+      </p>
+    </div>
+    <div class="page-num">12</div>
+  </div>
+
+  <!-- ==================== СТОРІНКА 13: РОЗДІЛ 3 (3.1, 3.2, РИС. 6, РИС. 7) ==================== -->
+  <div class="sheet">
+    <div class="page-content">
+      <h1>РОЗДІЛ 3 КЕРІВНИЦТВО КОРИСТУВАЧА (USER GUIDE)</h1>
+      <h2>3.1 Вступ та цільове призначення</h2>
+      <p>
+        <b>Призначення програми.</b> Веб-платформа «Контур-СППР» автоматизує процес багатокритеріальної оцінки мінних ризиків і допомагає формувати науково обґрунтовану чергу гуманітарного розмінування об’єктів критичної інфраструктури, соціальних закладів і сільськогосподарських угідь.
+      </p>
+      <p>
+        <b>Цільова аудиторія.</b> Керівництво призначене для командирів та аналітиків інженерно-саперних груп (ІРГ), а також диспетчерів координаційних центрів розмінування ДСНС України.
+      </p>
+
+      <h2>3.2 Швидкий старт і перша авторизація</h2>
+      <p>
+        <b>Перший вхід у систему.</b> Після відкриття застосунку в браузері відображається двоколонкове вікно захищеного входу (рис. 6). Введіть службовий e-mail і пароль або скористайтеся кнопками швидкого демонстраційного входу «Аналітик-сапер ІРГ» чи «Диспетчер штабу».
+      </p>
+      <p>
+        Для підключення нового екіпажу натисніть «Активувати сертифікат допуску», введіть виданий штабом токен підрозділу, ПІБ командира та пароль. У разі порушення правил складності пароля під полем миттєво з’явиться червона підказка валідатора (рис. 7).
+      </p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8pt;">
+        <!-- Рис. 6 -->
+        <div class="fig-box" style="margin:0;">
+          <div style="border:1px solid #cbd5e1; border-radius:8px; overflow:hidden; display:grid; grid-template-columns:1fr 1.3fr; font-family:Arial, sans-serif; font-size:8px; text-align:left; background:#fff;">
+            <div style="background:#065f46; color:#fff; padding:10px; display:flex; flex-direction:column; justify-content:space-between;">
+              <div>
+                <div style="font-weight:bold; color:#a7f3d0; margin-bottom:4px;">🧭 Контур-СППР v2.4</div>
+                <div style="font-weight:bold; font-size:9.5px; line-height:1.25;">Платформа пріоритизації розмінування</div>
+              </div>
+              <div style="font-size:7px; color:#a7f3d0;">КНУ ПСТ • Лисий О. О.</div>
+            </div>
+            <div style="padding:10px;">
+              <div style="font-weight:bold; font-size:10px; margin-bottom:6px;">Вхід до контуру</div>
+              <div>Службовий E-mail</div>
+              <div style="border:1px solid #cbd5e1; border-radius:4px; padding:3px 5px; margin:2px 0 5px 0;">o.lysy@kontur-dsns.gov.ua</div>
+              <div>Пароль</div>
+              <div style="border:1px solid #cbd5e1; border-radius:4px; padding:3px 5px; margin:2px 0 6px 0;">••••••••••••</div>
+              <div style="background:#059669; color:#fff; text-align:center; padding:4px; border-radius:4px; font-weight:bold; margin-bottom:6px;">Авторизуватися</div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; text-align:center; font-size:7.5px;">
+                <span style="border:1px solid #059669; color:#059669; padding:2px; border-radius:3px; font-weight:bold;">Аналітик ІРГ</span>
+                <span style="border:1px solid #cbd5e1; padding:2px; border-radius:3px;">Диспетчер</span>
+              </div>
+            </div>
+          </div>
+          <p class="fig-caption">Рис. 6 – Двоколонкове вікно входу</p>
+        </div>
+
+        <!-- Рис. 7 -->
+        <div class="fig-box" style="margin:0;">
+          <div style="border:1px solid #cbd5e1; border-radius:8px; overflow:hidden; display:grid; grid-template-columns:1fr 1.3fr; font-family:Arial, sans-serif; font-size:8px; text-align:left; background:#fff;">
+            <div style="background:#065f46; color:#fff; padding:10px; display:flex; flex-direction:column; justify-content:space-between;">
+              <div>
+                <div style="font-weight:bold; color:#a7f3d0; margin-bottom:4px;">🧭 Контур-СППР</div>
+                <div style="font-weight:bold; font-size:9px;">Реєстрація саперного розрахунку</div>
+              </div>
+              <div style="font-size:7px; color:#a7f3d0;">Захищений допуск</div>
+            </div>
+            <div style="padding:10px;">
+              <div style="font-weight:bold; font-size:10px; margin-bottom:4px;">Активація допуску ІРГ</div>
+              <div>Токен підрозділу</div>
+              <div style="border:1px solid #cbd5e1; border-radius:4px; padding:2px 5px; font-family:monospace; margin-bottom:4px;">KONTUR-IRG04-8821</div>
+              <div>ПІБ командира</div>
+              <div style="border:1px solid #cbd5e1; border-radius:4px; padding:2px 5px; margin-bottom:4px;">Олександр Лисий</div>
+              <div>Пароль</div>
+              <div style="border:1.5px solid #e11d48; border-radius:4px; padding:2px 5px;">••••••••</div>
+              <div style="color:#e11d48; font-size:7px; margin:2px 0 5px 0;">Потрібна велика літера та спецсимвол</div>
+              <div style="background:#059669; color:#fff; text-align:center; padding:4px; border-radius:4px; font-weight:bold;">Зареєструвати екіпаж</div>
+            </div>
+          </div>
+          <p class="fig-caption">Рис. 7 – Активація токена з валідацією</p>
+        </div>
+      </div>
+    </div>
+    <div class="page-num">13</div>
+  </div>
+
+  <!-- ==================== СТОРІНКА 14: РИС. 8 ТА П. 3.3 ==================== -->
+  <div class="sheet">
+    <div class="page-content">
+      <p>
+        <b>Головний екран після авторизації.</b> Після успішного входу аналітик-сапер потрапляє на «Оперативну геоінформаційну панель» (рис. 8). У верхньому ряді розташовано чотири картки ключових показників з кольоровими індикаторами пріоритету, нижче — віджет стану верифікації поточного сектора та картка найближчого наряд-завдання, а в основній робочій зоні — інтерактивна ГІС-карта контурів замінування та ранжована черга СППР.
+      </p>
+
+      <!-- Рис. 8: Головний екран із темним сайдбаром та смарагдовим стилем -->
+      <div class="fig-box">
+        <div style="border:1px solid #94a3b8; border-radius:8px; overflow:hidden; background:#f5f5f4; font-family:Arial, sans-serif; font-size:8.5px; text-align:left;">
+          <div style="background:#0f172a; color:#fff; padding:6px 12px; display:flex; justify-content:space-between; align-items:center;">
+            <span><b>🧭 КОНТУР-СППР</b> &nbsp; <span style="background:#1e293b; color:#34d399; padding:1px 6px; border-radius:4px; font-size:7.5px;">Лисий О. О. (ІПЗ-32/5)</span></span>
+            <span><span style="background:#059669; padding:2px 6px; border-radius:4px; font-weight:bold;">Аналітик-сапер</span> &nbsp; 🔔2 &nbsp; Вихід</span>
+          </div>
+          <div style="display:grid; grid-template-columns:125px 1fr; min-height:310px;">
+            <!-- Dark Sidebar -->
+            <div style="background:#0f172a; color:#cbd5e1; padding:8px; display:flex; flex-direction:column; justify-content:space-between;">
+              <div>
+                <div style="font-size:7px; color:#64748b; font-weight:bold; margin-bottom:4px;">НАВІГАЦІЯ МОДУЛЯ</div>
+                <div style="background:#059669; color:#fff; font-weight:bold; padding:5px 7px; border-radius:5px; margin-bottom:3px;">🗺️ Оперативна панель</div>
+                <div style="padding:5px 7px;">⚖️ Модуль СППР (Ваги)</div>
+                <div style="padding:5px 7px;">📈 Динаміка і прогноз</div>
+                <div style="padding:5px 7px;">🚜 Маршрутні виїзди</div>
+                <div style="padding:5px 7px;">📑 Реєстр та експорт</div>
+              </div>
+              <div style="background:#1e293b; padding:6px; border-radius:6px; font-size:7.5px;">
+                <b style="color:#34d399;">Розрахунок ІРГ-02</b><br/>Командир: О. Лисий
+              </div>
+            </div>
+            <!-- Main Content -->
+            <div style="padding:10px;">
+              <div style="font-weight:bold; font-size:11px; margin-bottom:6px;">Оперативна геоінформаційна панель</div>
+              <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:8px;">
+                <div style="background:#fff; border-left:3px solid #e11d48; padding:6px; border-radius:5px;">Найвищий індекс СППР<br/><b style="font-size:11px;">91,4 бала</b><br/><span style="color:#e11d48; font-size:7.5px;">Сектор КХ-14</span></div>
+                <div style="background:#fff; border-left:3px solid #059669; padding:6px; border-radius:5px;">Очищено за місяць<br/><b style="font-size:11px;">63,5 га</b><br/><span style="color:#059669; font-size:7.5px;">68% норми</span></div>
+                <div style="background:#fff; border-left:3px solid #d97706; padding:6px; border-radius:5px;">Знешкоджено ВНП<br/><b style="font-size:11px;">312 од.</b><br/><span style="color:#78716c; font-size:7.5px;">84 касетні</span></div>
+                <div style="background:#fff; border-left:3px solid #0d9488; padding:6px; border-radius:5px;">Прогноз на місяць<br/><b style="font-size:11px;">146,8 га</b><br/><span style="color:#0d9488; font-size:7.5px;">Інтервал 90%</span></div>
+              </div>
+              <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:8px; margin-bottom:8px;">
+                <div style="background:#fff; border:1px solid #d6d3d1; border-radius:6px; padding:8px;">
+                  <div style="display:flex; justify-content:space-between;"><span style="font-size:7.5px; color:#78716c; font-weight:bold;">КАРТКА ВЕРИФІКАЦІЇ СЕКТОРА КХ-14</span><span style="background:#d1fae5; color:#065f46; padding:1px 5px; border-radius:3px; font-size:7.5px; font-weight:bold;">робота в полі</span></div>
+                  <div style="font-weight:bold; font-size:10px; margin:2px 0;">Активне розмінування за пріоритетом СППР (#1)</div>
+                  <div style="font-size:8px; color:#57534e;">Розрахунок ІРГ-04 та комплекс Armtrac-400 проводять суцільне очищення.</div>
+                </div>
+                <div style="background:#fff; border:1px solid #d6d3d1; border-radius:6px; padding:8px;">
+                  <span style="background:#ecfdf5; color:#047857; font-size:7.5px; font-weight:bold; padding:1px 5px; border-radius:3px;">НАРЯД-ЗАВДАННЯ #14</span>
+                  <div style="font-weight:bold; margin-top:3px;">Виїзд: Балаклійський водогін</div>
+                  <div style="font-size:7.5px; color:#78716c;">Вікно робіт: 07:30 – 15:00</div>
+                </div>
+              </div>
+              <div style="display:grid; grid-template-columns:1.3fr 1fr; gap:8px;">
+                <div style="background:#fff; border:1px solid #d6d3d1; border-radius:6px; padding:8px;">
+                  <b>Інтерактивна карта контурів замінування (Leaflet GIS)</b>
+                  <div style="height:82px; background:#e7e5e4; border-radius:4px; margin-top:5px; position:relative;">
+                    <div style="position:absolute; left:30%; top:25%; width:55px; height:35px; background:rgba(225,29,72,0.35); border:1.5px solid #e11d48;"></div>
+                    <div style="position:absolute; left:60%; top:40%; width:45px; height:30px; background:rgba(5,150,105,0.35); border:1.5px solid #059669;"></div>
+                  </div>
+                </div>
+                <div style="background:#fff; border:1px solid #d6d3d1; border-radius:6px; padding:8px;">
+                  <b>Черга пріоритизації секторів СППР</b>
+                  <div style="font-size:8px; margin-top:5px;">#1 [КХ-14] Балаклійський водогін <b style="color:#e11d48; float:right;">91,4 / 80</b><div style="height:4px; background:#e11d48; border-radius:2px; margin:2px 0 5px 0;"></div></div>
+                  <div style="font-size:8px;">#2 [ЧН-08] Киїнка (Ліцей) <b style="color:#059669; float:right;">74,2 / 75</b><div style="height:4px; background:#059669; width:85%; border-radius:2px; margin-top:2px;"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="fig-caption">Рис. 8 – Головне вікно аналітика-сапера «Оперативна геоінформаційна панель»</p>
+      </div>
+
+      <h2>3.3 Огляд робочих зон та каркас екранів</h2>
+      <p>
+        Компонування всіх розділів підпорядковане єдиній модульній сітці. Схематичний каркас екрана (Wireframe) для десктопного та мобільного режимів зображено на рис. 9, а призначення кожного функціонального блока розкрито в табл. 5.
+      </p>
+    </div>
+    <div class="page-num">14</div>
+  </div>
+
+  <!-- ==================== СТОРІНКА 15: РИС. 9 ТА ТАБЛ. 5 ==================== -->
+  <div class="sheet">
+    <div class="page-content">
+      <div class="fig-box">
+        <svg viewBox="0 0 650 285" style="width:100%; height:auto;">
+          <g font-family="Arial, sans-serif" font-size="9.5" fill="none" stroke="#78716c" stroke-width="1.3">
+            <text x="215" y="14" text-anchor="middle" fill="#000" stroke="none" font-weight="bold">Десктопний монітор штабу (≥ 1024 px)</text>
+            <text x="545" y="14" text-anchor="middle" fill="#000" stroke="none" font-weight="bold">Польовий смартфон (&lt; 1024 px)</text>
+
+            <rect x="20" y="22" width="395" height="255" rx="6" fill="#f5f5f4" stroke="#44403c"/>
+            <!-- Dark Top Header (1) -->
+            <rect x="20" y="22" width="395" height="24" fill="#1e293b"/>
+            <!-- Dark Left Nav (2) -->
+            <rect x="20" y="46" width="82" height="231" fill="#334155"/>
+            <!-- 4 KPI Cards at Top (3) -->
+            <rect x="110" y="54" width="70" height="36" rx="3" fill="#fff"/>
+            <rect x="185" y="54" width="70" height="36" rx="3" fill="#fff"/>
+            <rect x="260" y="54" width="70" height="36" rx="3" fill="#fff"/>
+            <rect x="335" y="54" width="72" height="36" rx="3" fill="#fff"/>
+            <!-- Sector Verification Widget (4) + Mission Order (5) -->
+            <rect x="110" y="96" width="190" height="52" rx="4" fill="#fff"/>
+            <rect x="306" y="96" width="101" height="52" rx="4" fill="#fff"/>
+            <!-- GIS Map (6) + DSS Queue & Directive (7, 8) -->
+            <rect x="110" y="154" width="190" height="115" rx="4" fill="#fff"/>
+            <line x1="115" y1="162" x2="295" y2="264"/>
+            <line x1="295" y1="162" x2="115" y2="264"/>
+            <rect x="306" y="154" width="101" height="68" rx="4" fill="#fff"/>
+            <rect x="306" y="228" width="101" height="41" rx="4" fill="#fff"/>
+
+            <!-- Mobile Wireframe -->
+            <rect x="470" y="22" width="150" height="255" rx="8" fill="#f5f5f4" stroke="#44403c"/>
+            <rect x="470" y="22" width="150" height="22" fill="#1e293b"/>
+            <rect x="478" y="50" width="64" height="28" rx="3" fill="#fff"/>
+            <rect x="548" y="50" width="64" height="28" rx="3" fill="#fff"/>
+            <rect x="478" y="82" width="64" height="28" rx="3" fill="#fff"/>
+            <rect x="548" y="82" width="64" height="28" rx="3" fill="#fff"/>
+            <rect x="478" y="116" width="134" height="44" rx="4" fill="#fff"/>
+            <rect x="478" y="166" width="134" height="80" rx="4" fill="#fff"/>
+            <rect x="470" y="253" width="150" height="24" fill="#334155"/>
+
+            <!-- Emerald Badges -->
+            <g fill="#059669" stroke="none" font-weight="bold" font-size="9">
+              <circle cx="215" cy="34" r="8"/><text x="215" y="37" text-anchor="middle" fill="#fff">1</text>
+              <circle cx="61" cy="155" r="8"/><text x="61" y="158" text-anchor="middle" fill="#fff">2</text>
+              <circle cx="255" cy="72" r="8"/><text x="255" y="75" text-anchor="middle" fill="#fff">3</text>
+              <circle cx="205" cy="122" r="8"/><text x="205" y="125" text-anchor="middle" fill="#fff">4</text>
+              <circle cx="356" cy="122" r="8"/><text x="356" y="125" text-anchor="middle" fill="#fff">5</text>
+              <circle cx="205" cy="210" r="8"/><text x="205" y="213" text-anchor="middle" fill="#fff">6</text>
+              <circle cx="356" cy="188" r="8"/><text x="356" y="191" text-anchor="middle" fill="#fff">7</text>
+              <circle cx="356" cy="248" r="8"/><text x="356" y="251" text-anchor="middle" fill="#fff">8</text>
+            </g>
+          </g>
+        </svg>
+        <p class="fig-caption">Рис. 9 – Схематичний каркас екранів (Wireframe) для десктопа та смартфона</p>
+      </div>
+
+      <p class="table-title">Таблиця 5 – Опис структурних зон головного екрана</p>
+      <table class="doc-table">
+        <thead>
+          <tr>
+            <th style="width:8%;">Зона</th>
+            <th style="width:26%;">Назва блока</th>
+            <th style="width:66%;">Функціональне наповнення</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="text-align:center;">1</td>
+            <td>Тактична шапка</td>
+            <td>Назва платформи, перемикач ролей, індикатор тривожних сповіщень і кнопка завершення сесії</td>
+          </tr>
+          <tr>
+            <td style="text-align:center;">2</td>
+            <td>Навігаційна панель</td>
+            <td>Перехід між 5 модулями системи (на моніторі — темна ліва колонка, на смартфоні — нижній док)</td>
+          </tr>
+          <tr>
+            <td style="text-align:center;">3</td>
+            <td>Зведені KPI-картки</td>
+            <td>Максимальний індекс СППР, очищена площа за місяць, кількість знешкоджених ВНП і прогноз площі</td>
+          </tr>
+          <tr>
+            <td style="text-align:center;">4</td>
+            <td>Віджет верифікації</td>
+            <td>Динамічний стан обстеження поточного сектора (БПЛА-сканування, ресурс ІРГ, знайдені боєприпаси)</td>
+          </tr>
+          <tr>
+            <td style="text-align:center;">5</td>
+            <td>Наряд-завдання</td>
+            <td>Часове вікно найближчого виїзду групи та закріплена спецтехніка Armtrac-400</td>
+          </tr>
+          <tr>
+            <td style="text-align:center;">6</td>
+            <td>Картографічний модуль</td>
+            <td>Інтерактивна карта Leaflet із кольоровими полігонами замінованих секторів і підказками</td>
+          </tr>
+          <tr>
+            <td style="text-align:center;">7</td>
+            <td>Черга пріоритетів СППР</td>
+            <td>Ранжований список секторів за індексом <i>R<sub>i</sub></i> зі шкалами наближення до порога ризику</td>
+          </tr>
+          <tr>
+            <td style="text-align:center;">8</td>
+            <td>Директива безпеки</td>
+            <td>Останній циркуляр координаційного штабу ДСНС щодо регламенту проведення робіт</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="page-num">15</div>
+  </div>
+
+  <!-- ==================== СТОРІНКА 16: РИС. 10, 11, 12 ==================== -->
+  <div class="sheet">
+    <div class="page-content">
+      <p>
+        Допоміжні аналітичні екрани доступні з бічної навігації: модуль «Динаміка і прогноз» (рис. 10) візуалізує траєкторію очищення з 90-відсотковим довірчим коридором; «Маршрутні виїзди» (рис. 11) відображає тижневий графік роботи груп; «Параметри контуру» (рис. 12) дозволяє перемикати денну та нічну тактичну тему.
+      </p>
+
+      <!-- Рис. 10 -->
+      <div class="fig-box">
+        <div style="border:1px solid #94a3b8; border-radius:7px; overflow:hidden; background:#f5f5f4; font-family:Arial, sans-serif; font-size:8px; text-align:left;">
+          <div style="background:#0f172a; color:#fff; padding:5px 10px;"><b>🧭 КОНТУР-СППР</b> — Модуль «Динаміка і прогноз»</div>
+          <div style="padding:8px;">
+            <div style="background:#fff; border:1px solid #d6d3d1; border-radius:5px; padding:7px;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><b>Прогнозна траєкторія очищення секторів до кінця місяця (інтервал надійності 90%, z = 1,645)</b><span style="background:#059669; color:#fff; padding:1px 5px; border-radius:3px;">Графік | Таблиця</span></div>
+              <svg viewBox="0 0 500 75" style="width:100%; height:60px; background:#fafaf9; border:1px solid #e7e5e4; border-radius:4px;">
+                <line x1="20" y1="14" x2="480" y2="14" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="4,3"/>
+                <polygon points="210,48 480,16 480,34 210,48" fill="#a7f3d0" opacity="0.7"/>
+                <polyline fill="none" stroke="#059669" stroke-width="2" points="20,68 70,62 120,57 165,52 210,48"/>
+                <line x1="210" y1="48" x2="480" y2="24" stroke="#047857" stroke-width="1.8" stroke-dasharray="5,3"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <p class="fig-caption">Рис. 10 – Екран «Динаміка і прогноз» із 90-відсотковим довірчим коридором</p>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <!-- Рис. 11 -->
+        <div class="fig-box" style="margin:0;">
+          <div style="border:1px solid #94a3b8; border-radius:7px; overflow:hidden; background:#fff; font-family:Arial, sans-serif; font-size:8px; text-align:left; padding:8px;">
+            <div style="font-weight:bold; font-size:9.5px; margin-bottom:5px;">🚜 Розклад виїздів груп ІРГ (7 діб)</div>
+            <div style="margin-bottom:4px;"><b>Пн, 16.11</b> (КХ-14) <div style="height:7px; background:#059669; width:70%; border-radius:2px; margin-top:2px;"></div></div>
+            <div style="margin-bottom:4px;"><b>Вт, 17.11</b> (ЧН-08) <div style="height:7px; background:#e11d48; width:45%; border-radius:2px; margin-top:2px;"></div></div>
+            <div><b>Ср, 18.11</b> (МК-19) <div style="height:7px; background:#059669; width:60%; border-radius:2px; margin-top:2px;"></div></div>
+          </div>
+          <p class="fig-caption">Рис. 11 – Графік виїздів екіпажів</p>
+        </div>
+
+        <!-- Рис. 12 -->
+        <div class="fig-box" style="margin:0;">
+          <div style="border:1px solid #94a3b8; border-radius:7px; overflow:hidden; background:#fff; font-family:Arial, sans-serif; font-size:8px; text-align:left; padding:8px;">
+            <div style="font-weight:bold; font-size:9.5px; margin-bottom:5px;">⚙️ Параметри захищеного контуру</div>
+            <div style="display:flex; gap:4px; margin-bottom:5px;">
+              <span style="background:#059669; color:#fff; padding:2px 6px; border-radius:3px; font-weight:bold;">☀️ Денний</span>
+              <span style="border:1px solid #cbd5e1; padding:2px 6px; border-radius:3px;">🌙 Нічний тактичний</span>
+            </div>
+            <div>Норматив Armtrac: <b>4,32 тис. грн/га</b> • Сповіщення: ☑</div>
+          </div>
+          <p class="fig-caption">Рис. 12 – Налаштування контуру</p>
+        </div>
+      </div>
+    </div>
+    <div class="page-num">16</div>
+  </div>
+
+  <!-- ==================== СТОРІНКА 17: П. 3.4 (КРОК 1, 2, РИС. 13, 14, 15, 16) ==================== -->
+  <div class="sheet">
+    <div class="page-content">
+      <h2>3.4 Покрокова інструкція основних процесів</h2>
+      <p><b><i>Крок 1. Введення даних (Реєстрація нового сектора та граничного порога ризику)</i></b></p>
+      <ol>
+        <li>У лівому меню відкрийте розділ «Модуль СППР (Ваги)» та натисніть смарагдову кнопку «+ Зареєструвати сектор».</li>
+        <li>У діалоговому вікні введіть назву об’єкта (наприклад, «Куп’янський залізничний вузол»), оберіть категорію земель і задайте граничний поріг індексу небезпеки у балах СППР (рис. 13).</li>
+        <li>Після натискання «Зберегти» ділянка додається до матриці та відображається зі шкалою поточного ризику (рис. 14).</li>
+      </ol>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <!-- Рис. 13 -->
+        <div class="fig-box" style="margin:0;">
+          <div style="background:#334155; padding:12px; border-radius:7px; font-family:Arial, sans-serif; font-size:8px; text-align:left;">
+            <div style="background:#fff; padding:10px; border-radius:6px;">
+              <div style="font-weight:bold; font-size:9.5px; margin-bottom:6px;">Зареєструвати сектор СППР</div>
+              <div>Назва об’єкта</div>
+              <div style="border:1px solid #cbd5e1; padding:3px 5px; border-radius:3px; margin:2px 0 5px 0;">Куп’янський залізничний вузол</div>
+              <div>Граничний поріг ризику, балів</div>
+              <div style="border:1.5px solid #059669; padding:3px 5px; border-radius:3px; margin:2px 0 6px 0;">75</div>
+              <div style="text-align:right;"><span style="background:#059669; color:#fff; padding:3px 8px; border-radius:4px; font-weight:bold;">Зберегти</span></div>
+            </div>
+          </div>
+          <p class="fig-caption">Рис. 13 – Діалог реєстрації сектора</p>
+        </div>
+
+        <!-- Рис. 14 -->
+        <div class="fig-box" style="margin:0;">
+          <div style="border:1px solid #94a3b8; background:#fff; padding:10px; border-radius:7px; font-family:Arial, sans-serif; font-size:8px; text-align:left;">
+            <div style="font-weight:bold; margin-bottom:5px;">Активні сектори в черзі СППР:</div>
+            <div style="border:1px solid #e7e5e4; padding:5px; border-radius:4px; margin-bottom:4px;">
+              <b>[КХ-14] Балаклійський водогін</b> — 71,2 / 80 (89%)
+              <div style="height:4px; background:#059669; width:89%; margin-top:2px;"></div>
+            </div>
+            <div style="border:1px solid #e7e5e4; padding:5px; border-radius:4px;">
+              <b>[ХК-22] Куп’янський вузол</b> — 64,5 / 75 (86%)
+              <div style="height:4px; background:#059669; width:86%; margin-top:2px;"></div>
+            </div>
+          </div>
+          <p class="fig-caption">Рис. 14 – Матриця секторів після додавання</p>
+        </div>
+      </div>
+
+      <p><b><i>Крок 2. Обробка та калібрування критеріїв СППР</i></b></p>
+      <p>
+        Переміщуйте повзунки вагових коефіцієнтів <i>w</i><sub>1</sub>..<i>w</i><sub>5</sub> або відредагуйте поріг чутливості сектора (рис. 15). Якщо розрахунковий індекс <i>R<sub>i</sub></i> перевищить заданий поріг, картка отримає червоний бейдж «ПЕРЕВИЩЕНО ПОРІГ», а у верхній панелі з’явиться екстрене сповіщення для першочергової відправки саперів (рис. 16).
+      </p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <!-- Рис. 15 -->
+        <div class="fig-box" style="margin:0;">
+          <div style="background:#334155; padding:10px; border-radius:7px; font-family:Arial, sans-serif; font-size:8px; text-align:left;">
+            <div style="background:#fff; padding:8px; border-radius:6px;">
+              <b>Зміна порога сектора [КХ-14]</b>
+              <div style="margin-top:4px;">Новий поріг тривоги: <b>65 балів</b></div>
+              <div style="text-align:right; margin-top:5px;"><span style="background:#059669; color:#fff; padding:2px 7px; border-radius:3px;">Оновити</span></div>
+            </div>
+          </div>
+          <p class="fig-caption">Рис. 15 – Коригування порога загрози</p>
+        </div>
+
+        <!-- Рис. 16 -->
+        <div class="fig-box" style="margin:0;">
+          <div style="border:1.5px solid #e11d48; background:#fff1f2; padding:8px; border-radius:7px; font-family:Arial, sans-serif; font-size:8px; text-align:left;">
+            <div style="display:flex; justify-content:space-between;"><b style="color:#9f1239;">🔔 ТРИВОГА СППР: Сектор [КХ-14]</b><span style="background:#e11d48; color:#fff; padding:1px 4px; border-radius:3px;">114%</span></div>
+            <div style="margin-top:3px;">Індекс ризику <b>91,4 бала</b> перевищив поріг. Сектор переміщено на позицію #1 черги!</div>
+          </div>
+          <p class="fig-caption">Рис. 16 – Спрацювання тривоги СППР</p>
+        </div>
+      </div>
+    </div>
+    <div class="page-num">17</div>
+  </div>
+
+  <!-- ==================== СТОРІНКА 18: КРОК 3 (РИС. 17, 18) ТА П. 3.5 (РИС. 19) ==================== -->
+  <div class="sheet">
+    <div class="page-content">
+      <p><b><i>Крок 3. Збереження та експорт результатів</i></b></p>
+      <p>
+        Перейдіть у модуль «Реєстр та експорт» (рис. 17). Для отримання таблиці Excel натисніть «Вивантажити CSV», а для генерації офіційного акта виконаних робіт — кнопку «Друкувати PDF-акт» (рис. 18).
+      </p>
+
+      <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:10px;">
+        <!-- Рис. 17 -->
+        <div class="fig-box" style="margin:0;">
+          <div style="border:1px solid #94a3b8; background:#fff; padding:8px; border-radius:7px; font-family:Arial, sans-serif; font-size:8px; text-align:left;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <b>📑 Реєстр виконаних робіт</b>
+              <span><span style="background:#059669; color:#fff; padding:2px 6px; border-radius:3px;">PDF-акт</span> <span style="border:1px solid #cbd5e1; padding:2px 6px; border-radius:3px;">CSV</span></span>
+            </div>
+            <table style="width:100%; border-collapse:collapse; font-size:7.5px;">
+              <tr style="background:#f5f5f4; border-bottom:1px solid #d6d3d1;"><th style="text-align:left; padding:2px;">Дата</th><th style="text-align:right;">Armtrac, га</th><th style="text-align:right;">Сапери, га</th><th style="text-align:right;">ВНП</th><th style="text-align:right;">Разом</th></tr>
+              <tr style="border-bottom:1px solid #f5f5f4;"><td style="padding:2px;">01.11.2026</td><td style="text-align:right;">3,45</td><td style="text-align:right;">1,20</td><td style="text-align:right;">28</td><td style="text-align:right; font-weight:bold;">4,65</td></tr>
+              <tr style="border-bottom:1px solid #f5f5f4;"><td style="padding:2px;">02.11.2026</td><td style="text-align:right;">4,10</td><td style="text-align:right;">1,35</td><td style="text-align:right;">34</td><td style="text-align:right; font-weight:bold;">5,45</td></tr>
+              <tr><td style="padding:2px;">04.11.2026</td><td style="text-align:right;">4,60</td><td style="text-align:right;">1,50</td><td style="text-align:right;">41</td><td style="text-align:right; font-weight:bold;">6,10</td></tr>
+            </table>
+          </div>
+          <p class="fig-caption">Рис. 17 – Модуль «Реєстр та експорт»</p>
+        </div>
+
+        <!-- Рис. 18 -->
+        <div class="fig-box" style="margin:0;">
+          <div style="border:1px solid #94a3b8; background:#fff; padding:8px; border-radius:7px; font-family:Arial, sans-serif; font-size:7.5px; text-align:left;">
+            <div style="font-weight:bold; font-size:9px;">АКТ № 11/26 гуманітарного очищення</div>
+            <div style="color:#78716c; margin-bottom:4px;">Екіпаж: ІРГ-02 (Командир: О. Лисий)</div>
+            <div style="border-top:1px solid #000; border-bottom:1px solid #000; padding:3px 0; margin:4px 0;">
+              Усього очищено: <b>63,50 га</b> | Знешкоджено ВНП: <b>312 од.</b>
+            </div>
+            <div style="text-align:right; color:#78716c;">Аркуш 1 / 1</div>
+          </div>
+          <p class="fig-caption">Рис. 18 – Сформований PDF-акт</p>
+        </div>
+      </div>
+
+      <h2>3.5 Інструментарій диспетчера координаційного штабу</h2>
+      <p>
+        Після перемикання у роль «Диспетчер штабу» відкривається консоль управління регіоном (рис. 19), яка містить селектор «Симулятор життєвого циклу сектора» для перевірки всіх 7 станів віджета верифікації, реєстр екіпажів із генерацією токенів допуску (рис. 20) та модуль розсилання директив із автоматичним вирізанням шкідливих тегів <code>&lt;script&gt;</code> (рис. 21).
+      </p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
+        <!-- Рис. 19 -->
+        <div class="fig-box" style="margin:0;">
+          <div style="border:1px solid #94a3b8; background:#fff; padding:7px; border-radius:6px; font-family:Arial, sans-serif; font-size:7.5px; text-align:left;">
+            <b>🛰️ Симулятор станів сектора</b>
+            <div style="border:1px solid #059669; padding:3px; border-radius:3px; margin-top:4px; background:#f0fdf4;">6. Критична загроза: мінна пастка ▾</div>
+          </div>
+          <p class="fig-caption" style="font-size:11pt;">Рис. 19 – Симулятор штабу</p>
+        </div>
+
+        <!-- Рис. 20 -->
+        <div class="fig-box" style="margin:0;">
+          <div style="border:1px solid #94a3b8; background:#fff; padding:7px; border-radius:6px; font-family:Arial, sans-serif; font-size:7.5px; text-align:left;">
+            <b>🛡️ Допуски екіпажів ІРГ</b>
+            <div style="margin-top:4px;">ІРГ-04: <code>KONTUR-IRG04-8821</code></div>
+          </div>
+          <p class="fig-caption" style="font-size:11pt;">Рис. 20 – Токени екіпажів</p>
+        </div>
+
+        <!-- Рис. 21 -->
+        <div class="fig-box" style="margin:0;">
+          <div style="border:1px solid #94a3b8; background:#fff; padding:7px; border-radius:6px; font-family:Arial, sans-serif; font-size:7.5px; text-align:left;">
+            <b>📡 Санітизація XSS (DOMPurify)</b>
+            <div style="margin-top:4px; color:#059669;">Тег &lt;script&gt; успішно вилучено!</div>
+          </div>
+          <p class="fig-caption" style="font-size:11pt;">Рис. 21 – Очищення XSS</p>
+        </div>
+      </div>
+
+      <h2>3.6 Усунення типових несправностей</h2>
+      <ul>
+        <li><b>Повідомлення «Зв’язок із геосервером втрачено»:</b> перевірте інтернет-канал і натисніть кнопку «Повторити синхронізацію».</li>
+        <li><b>Токен підрозділу відхилено:</b> сертифікат міг бути активований раніше; зверніться до диспетчера штабу для генерації нового токена.</li>
+      </ul>
+    </div>
+    <div class="page-num">18</div>
+  </div>
+
+  <!-- ==================== СТОРІНКА 19: ВИСНОВОК ==================== -->
+  <div class="sheet">
+    <div class="page-content">
+      <h1>ВИСНОВОК</h1>
+      <p>
+        У результаті виконання індивідуального STEM-проєкту з дисципліни «Розробник фронтенду програмних систем» спроєктовано та реалізовано клієнтську веб-платформу «Контур-СППР» для оцінки ризиків і пріоритизації гуманітарного розмінування територій. Програмний продукт розроблено на стеку React 18, TypeScript, Tailwind CSS та Leaflet API з розподілом інтерфейсу між ролями аналітика-сапера інженерної групи та диспетчера координаційного штабу ДСНС.
+      </p>
+      <p>
+        У роботі виконано всі функціональні та нефункціональні вимоги: побудовано діаграми потоків користувача (User Flow) для активації допуску саперного екіпажу й оцінки сектора в модулі СППР, а також діаграму станів (UML State Machine) віджета верифікації сектора на сім станів; реалізовано математичне ядро багатокритеріального ранжування за методом зваженої лінійної згортки (WLC) та інтервального прогнозування площі очищення з надійністю 90 %; забезпечено адаптивність під екрани польових смартфонів (390 px), кросбраузерність, захист від XSS і CSV-ін’єкцій та покриття коду автоматизованими тестами Vitest і Playwright.
+      </p>
+      <p>
+        Запропонована архітектура ізолює мережевий шар через типізований контракт REST API, що дозволяє у подальшому підключити промисловий геосервер штабу ДСНС, телеметрію безпілотників та супутникові трекери важких машин розмінування Armtrac-400 без модифікації компонентів представлення.
+      </p>
+    </div>
+    <div class="page-num">19</div>
+  </div>
+
+  <!-- ==================== СТОРІНКА 20: СПИСОК ДЖЕРЕЛ ==================== -->
+  <div class="sheet">
+    <div class="page-content">
+      <h1>СПИСОК ВИКОРИСТАНИХ ДЖЕРЕЛ</h1>
+      <p>1. Gibbons S. User Journeys vs. User Flows. Fremont : Nielsen Norman Group, 2023. 14 p. URL: https://www.nngroup.com/articles/user-journeys-vs-user-flows/ (дата звернення: 15.11.2026).</p>
+      <p>2. OMG Unified Modeling Language (OMG UML) : Specification Version 2.5.1. Needham : Object Management Group, 2017. 796 p. URL: https://www.omg.org/spec/UML/2.5.1/ (дата звернення: 15.11.2026).</p>
+      <p>3. Banks A., Porcello E. Learning React: Modern Patterns for Developing React Apps. 2nd ed. Sebastopol : O’Reilly Media, 2020. 310 p. URL: https://react.dev/reference/react (дата звернення: 15.11.2026).</p>
+      <p>4. Goldberg J. Learning TypeScript: Enhance Your Web Development Skills Using Type-Safe JavaScript. Sebastopol : O’Reilly Media, 2022. 292 p. URL: https://www.typescriptlang.org/docs/ (дата звернення: 15.11.2026).</p>
+      <p>5. You E. Vite Next Generation Frontend Tooling : Official Guide. San Francisco : Vite Team, 2024. 85 p. URL: https://vite.dev/guide/ (дата звернення: 15.11.2026).</p>
+      <p>6. Florence R., Jackson M. React Router v6 : Official Documentation. Wilmington : Remix Software, 2024. 112 p. URL: https://reactrouter.com/ (дата звернення: 15.11.2026).</p>
+      <p>7. Linsley T. TanStack Query for React : Asynchronous State Management. Salt Lake City : TanStack, 2024. 94 p. URL: https://tanstack.com/query/latest (дата звернення: 15.11.2026).</p>
+      <p>8. Wathan A., Schoger S. Tailwind CSS : Utility-First Responsive Design Framework. Cambridge : Tailwind Labs, 2024. 160 p. URL: https://tailwindcss.com/docs (дата звернення: 15.11.2026).</p>
+      <p>9. Agafonkin V. Leaflet — An Open-Source JavaScript Library for Mobile-Friendly Interactive Maps. Kyiv : Leaflet Project, 2023. 68 p. URL: https://leafletjs.com/reference.html (дата звернення: 15.11.2026).</p>
+      <p>10. McDonnell C. Zod : TypeScript-First Schema Validation with Static Type Inference. New York : Zod Open Source, 2024. 52 p. URL: https://zod.dev/ (дата звернення: 15.11.2026).</p>
+      <p>11. Zakharchenko A. Mock Service Worker (MSW) : Seamless REST API Mocking for Browser and Node. Tallinn : MSW Project, 2024. 74 p. URL: https://mswjs.io/docs/ (дата звернення: 15.11.2026).</p>
+      <p>12. Сааті Т. Прийняття рішень при залежностях і зворотних зв’язках: Аналітичні мережі. Київ : Наукова думка, 2015. 356 с.</p>
+      <p>13. Attamimi T. Playwright End-to-End Testing Framework : Cross-Browser Automation. Redmond : Microsoft Corp., 2024. 128 p. URL: https://playwright.dev/docs/intro (дата звернення: 15.11.2026).</p>
+      <p>14. Heiderich M. DOMPurify : Fast, Tolerant XSS Sanitizer for HTML and MathML. Berlin : Cure53, 2024. 46 p. URL: https://github.com/cure53/DOMPurify (дата звернення: 15.11.2026).</p>
+      <p>15. Wichers D., Manico J. Cross Site Scripting Prevention Cheat Sheet. Wakefield : OWASP Foundation, 2024. 38 p. URL: https://cheatsheetseries.owasp.org/ (дата звернення: 15.11.2026).</p>
+      <p>16. Sterne B. Content Security Policy (CSP) Reference Guide. Mountain View : Mozilla MDN Web Docs, 2024. 64 p. URL: https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP (дата звернення: 15.11.2026).</p>
+      <p>17. Kirkpatrick A., Campbell A. Web Content Accessibility Guidelines (WCAG) 2.2 : W3C Recommendation. Cambridge : W3C, 2023. 142 p. URL: https://www.w3.org/TR/WCAG22/ (дата звернення: 15.11.2026).</p>
+      <p>18. Fu A., Capeletto M. Vitest : Next Generation Unit Testing Framework Powered by Vite. San Francisco : Vitest Team, 2024. 88 p. URL: https://vitest.dev/guide/ (дата звернення: 15.11.2026).</p>
+    </div>
+    <div class="page-num">20</div>
+  </div>
+
+</body>
+</html>
