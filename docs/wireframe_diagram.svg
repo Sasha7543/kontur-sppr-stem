@@ -1,142 +1,51 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 680" width="100%" height="100%" style="background:#ffffff; font-family:'Segoe UI', Arial, sans-serif;">
-  <defs>
-    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#f1f5f9" stroke-width="1"/>
-    </pattern>
-  </defs>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 650 315" width="650" height="315" style="background:#ffffff;">
+  <g font-family="Arial, sans-serif" font-size="9.5" fill="none" stroke="#78716c" stroke-width="1.3">
+    <text x="215" y="16" text-anchor="middle" fill="#000" stroke="none" font-weight="bold">Десктопний монітор штабу (≥ 1024 px)</text>
+    <text x="545" y="16" text-anchor="middle" fill="#000" stroke="none" font-weight="bold">Польовий смартфон (&lt; 1024 px)</text>
 
-  <rect width="1000" height="680" fill="url(#grid)" />
+    <rect x="20" y="24" width="395" height="255" rx="6" fill="#f5f5f4" stroke="#44403c"/>
+    <!-- Dark Top Header (1) -->
+    <rect x="20" y="24" width="395" height="24" fill="#1e293b"/>
+    <!-- Dark Left Nav (2) -->
+    <rect x="20" y="48" width="82" height="231" fill="#334155"/>
+    <!-- 4 KPI Cards at Top (3) -->
+    <rect x="110" y="56" width="70" height="36" rx="3" fill="#fff"/>
+    <rect x="185" y="56" width="70" height="36" rx="3" fill="#fff"/>
+    <rect x="260" y="56" width="70" height="36" rx="3" fill="#fff"/>
+    <rect x="335" y="56" width="72" height="36" rx="3" fill="#fff"/>
+    <!-- Sector Verification Widget (4) + Mission Order (5) -->
+    <rect x="110" y="98" width="190" height="52" rx="4" fill="#fff"/>
+    <rect x="306" y="98" width="101" height="52" rx="4" fill="#fff"/>
+    <!-- GIS Map (6) + DSS Queue & Directive (7, 8) -->
+    <rect x="110" y="156" width="190" height="115" rx="4" fill="#fff"/>
+    <line x1="115" y1="164" x2="295" y2="266"/>
+    <line x1="295" y1="164" x2="115" y2="266"/>
+    <rect x="306" y="156" width="101" height="68" rx="4" fill="#fff"/>
+    <rect x="306" y="230" width="101" height="41" rx="4" fill="#fff"/>
 
-  <!-- Заголовок діаграми -->
-  <text x="500" y="35" text-anchor="middle" font-size="18" font-weight="bold" fill="#0f172a">
-    КАРКАС ГОЛОВНОГО ЕКРАНА ІНТЕРФЕЙСУ (WIREFRAME)
-  </text>
-  <text x="500" y="55" text-anchor="middle" font-size="12" fill="#64748b">
-    Схематичне розміщення структурних компонентів СППР розмінування
-  </text>
+    <!-- Mobile Wireframe -->
+    <rect x="470" y="24" width="150" height="255" rx="8" fill="#f5f5f4" stroke="#44403c"/>
+    <rect x="470" y="24" width="150" height="22" fill="#1e293b"/>
+    <rect x="478" y="52" width="64" height="28" rx="3" fill="#fff"/>
+    <rect x="548" y="52" width="64" height="28" rx="3" fill="#fff"/>
+    <rect x="478" y="84" width="64" height="28" rx="3" fill="#fff"/>
+    <rect x="548" y="84" width="64" height="28" rx="3" fill="#fff"/>
+    <rect x="478" y="118" width="134" height="44" rx="4" fill="#fff"/>
+    <rect x="478" y="168" width="134" height="80" rx="4" fill="#fff"/>
+    <rect x="470" y="255" width="150" height="24" fill="#334155"/>
 
-  <!-- Зона 1: HEADER -->
-  <rect x="40" y="70" width="920" height="50" rx="6" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="2,2"/>
-  <rect x="55" y="82" width="26" height="26" rx="4" fill="#cbd5e1"/>
-  <text x="95" y="100" font-size="13" font-weight="bold" fill="#1e293b">[ЛОГОТИП &amp; НАЗВА СИСТЕМИ: СППР Гуманітарного розмінування]</text>
-  <text x="580" y="100" font-size="11" fill="#64748b">[Інфо: КНУ, ПСТ, Лисий О.О., гр. 32/5]</text>
-  <rect x="830" y="80" width="115" height="30" rx="4" fill="#e2e8f0" stroke="#94a3b8"/>
-  <text x="887" y="100" text-anchor="middle" font-size="11" font-weight="bold" fill="#334155">[Кнопка: Експорт CSV]</text>
+    <!-- Emerald Badges -->
+    <g fill="#059669" stroke="none" font-weight="bold" font-size="9">
+      <circle cx="215" cy="36" r="8"/><text x="215" y="39" text-anchor="middle" fill="#fff">1</text>
+      <circle cx="61" cy="157" r="8"/><text x="61" y="160" text-anchor="middle" fill="#fff">2</text>
+      <circle cx="255" cy="74" r="8"/><text x="255" y="77" text-anchor="middle" fill="#fff">3</text>
+      <circle cx="205" cy="124" r="8"/><text x="205" y="127" text-anchor="middle" fill="#fff">4</text>
+      <circle cx="356" cy="124" r="8"/><text x="356" y="127" text-anchor="middle" fill="#fff">5</text>
+      <circle cx="205" cy="212" r="8"/><text x="205" y="215" text-anchor="middle" fill="#fff">6</text>
+      <circle cx="356" cy="190" r="8"/><text x="356" y="193" text-anchor="middle" fill="#fff">7</text>
+      <circle cx="356" cy="250" r="8"/><text x="356" y="253" text-anchor="middle" fill="#fff">8</text>
+    </g>
 
-  <!-- Зона 2: KPI METRICS CARDS -->
-  <g transform="translate(40, 130)">
-    <!-- Card 1 -->
-    <rect x="0" y="0" width="215" height="55" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
-    <text x="15" y="22" font-size="11" fill="#64748b">Загальна площа</text>
-    <text x="15" y="44" font-size="15" font-weight="bold" fill="#1e293b">[316.9 га]</text>
-
-    <!-- Card 2 -->
-    <rect x="235" y="0" width="215" height="55" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
-    <text x="250" y="22" font-size="11" fill="#64748b">Очищено територій</text>
-    <text x="250" y="44" font-size="15" font-weight="bold" fill="#10b981">[12.4 га (4%)]</text>
-
-    <!-- Card 3 -->
-    <rect x="470" y="0" width="215" height="55" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
-    <text x="485" y="22" font-size="11" fill="#64748b">В активній роботі</text>
-    <text x="485" y="44" font-size="15" font-weight="bold" fill="#f59e0b">[3 сектори]</text>
-
-    <!-- Card 4 -->
-    <rect x="705" y="0" width="215" height="55" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
-    <text x="720" y="22" font-size="11" fill="#64748b">Очікують у черзі</text>
-    <text x="720" y="44" font-size="15" font-weight="bold" fill="#ef4444">[3 сектори]</text>
+    <text x="325" y="302" text-anchor="middle" fill="#000" stroke="none" font-weight="bold" font-size="11">Рис. 9 – Схематичний каркас екранів (Wireframe) платформи «Контур-СППР»</text>
   </g>
-
-  <!-- Зона 3: ГОЛОВНИЙ РОБОЧИЙ ПРОСТІР (SPLIT VIEW) -->
-
-  <!-- Ліва панель: КАРТА (ГІС КОНТЕЙНЕР) -->
-  <g transform="translate(40, 200)">
-    <rect x="0" y="0" width="530" height="425" rx="8" fill="#f8fafc" stroke="#64748b" stroke-width="2"/>
-    <rect x="15" y="15" width="500" height="30" rx="4" fill="#ffffff" stroke="#cbd5e1"/>
-    <text x="30" y="35" font-size="12" font-weight="bold" fill="#334155">[Інтерактивна ГІС-карта OpenStreetMap + Leaflet]</text>
-    <text x="380" y="35" font-size="10" fill="#64748b">[Легенда: 🔴 🟠 🟢]</text>
-
-    <!-- Схематичні полігони та мітки -->
-    <polygon points="120,120 200,100 240,160 150,180" fill="#fee2e2" stroke="#ef4444" stroke-width="2"/>
-    <text x="175" y="145" text-anchor="middle" font-size="10" font-weight="bold" fill="#dc2626">SEC-01 (Pi=92)</text>
-
-    <polygon points="320,200 410,190 430,260 340,270" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
-    <text x="375" y="235" text-anchor="middle" font-size="10" font-weight="bold" fill="#d97706">SEC-04 (Pi=84)</text>
-
-    <polygon points="180,260 250,250 260,310 190,320" fill="#dcfce7" stroke="#10b981" stroke-width="2"/>
-    <text x="220" y="290" text-anchor="middle" font-size="10" font-weight="bold" fill="#059669">SEC-06 (Очищено)</text>
-
-    <!-- Нижня плашка деталізації вибраного сектора -->
-    <rect x="15" y="340" width="500" height="70" rx="6" fill="#ffffff" stroke="#3b82f6" stroke-width="1.5"/>
-    <text x="30" y="362" font-size="11" font-weight="bold" fill="#1e293b">[КАРТКА ІНСПЕКЦІЇ ВИБРАНОГО СЕКТОРА]</text>
-    <text x="30" y="380" font-size="10" fill="#64748b">Код: SEC-KH-01 | Область: Харківська | Площа: 45.2 га | Пріоритет СППР: 92/100 (#1)</text>
-    <text x="30" y="398" font-size="10" fill="#2563eb">[Селектор швидкої зміни статусу: Очікує / В процесі / Очищено]</text>
-  </g>
-
-  <!-- Права панель: ТАБИ ТА УПРАВЛІННЯ СППР -->
-  <g transform="translate(590, 200)">
-    <rect x="0" y="0" width="370" height="425" rx="8" fill="#ffffff" stroke="#64748b" stroke-width="2"/>
-    
-    <!-- Навігаційні вкладки -->
-    <rect x="10" y="10" width="85" height="28" rx="4" fill="#2563eb"/>
-    <text x="52" y="28" text-anchor="middle" font-size="10" font-weight="bold" fill="#ffffff">СППР Ваги</text>
-
-    <rect x="100" y="10" width="85" height="28" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
-    <text x="142" y="28" text-anchor="middle" font-size="10" fill="#475569">Черга робіт</text>
-
-    <rect x="190" y="10" width="80" height="28" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
-    <text x="230" y="28" text-anchor="middle" font-size="10" fill="#475569">+ Сектор</text>
-
-    <rect x="275" y="10" width="85" height="28" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
-    <text x="317" y="28" text-anchor="middle" font-size="10" fill="#475569">Аналітика</text>
-
-    <!-- Слайдери СППР (WLC модель) -->
-    <text x="15" y="65" font-size="12" font-weight="bold" fill="#1e293b">Панель багатокритеріального аналізу</text>
-    <text x="15" y="80" font-size="10" fill="#64748b">Формула: P = 100 · ∑(w_k · c_k / 10)</text>
-
-    <!-- Слайдер 1 -->
-    <text x="15" y="110" font-size="10" font-weight="bold" fill="#334155">w₁ Інфраструктура (30%)</text>
-    <rect x="15" y="118" width="340" height="6" rx="3" fill="#e2e8f0"/>
-    <rect x="15" y="118" width="102" height="6" rx="3" fill="#2563eb"/>
-    <circle cx="117" cy="121" r="7" fill="#1d4ed8"/>
-
-    <!-- Слайдер 2 -->
-    <text x="15" y="150" font-size="10" font-weight="bold" fill="#334155">w₂ Безпека населення (25%)</text>
-    <rect x="15" y="158" width="340" height="6" rx="3" fill="#e2e8f0"/>
-    <rect x="15" y="158" width="85" height="6" rx="3" fill="#2563eb"/>
-    <circle cx="100" cy="161" r="7" fill="#1d4ed8"/>
-
-    <!-- Слайдер 3 -->
-    <text x="15" y="190" font-size="10" font-weight="bold" fill="#334155">w₃ Агро &amp; Економіка (20%)</text>
-    <rect x="15" y="198" width="340" height="6" rx="3" fill="#e2e8f0"/>
-    <rect x="15" y="198" width="68" height="6" rx="3" fill="#2563eb"/>
-    <circle cx="83" cy="201" r="7" fill="#1d4ed8"/>
-
-    <!-- Слайдер 4 -->
-    <text x="15" y="230" font-size="10" font-weight="bold" fill="#334155">w₄ Небезпека мінування (15%)</text>
-    <rect x="15" y="238" width="340" height="6" rx="3" fill="#e2e8f0"/>
-    <rect x="15" y="238" width="51" height="6" rx="3" fill="#2563eb"/>
-    <circle cx="66" cy="241" r="7" fill="#1d4ed8"/>
-
-    <!-- Слайдер 5 -->
-    <text x="15" y="270" font-size="10" font-weight="bold" fill="#334155">w₅ Історія інцидентів (10%)</text>
-    <rect x="15" y="278" width="340" height="6" rx="3" fill="#e2e8f0"/>
-    <rect x="15" y="278" width="34" height="6" rx="3" fill="#2563eb"/>
-    <circle cx="49" cy="281" r="7" fill="#1d4ed8"/>
-
-    <!-- Стратегічні пресети -->
-    <text x="15" y="315" font-size="11" font-weight="bold" fill="#334155">Швидкі пресети ОПР:</text>
-    <rect x="15" y="325" width="165" height="26" rx="4" fill="#eff6ff" stroke="#93c5fd"/>
-    <text x="97" y="342" text-anchor="middle" font-size="9" fill="#1d4ed8">[Цивільна безпека]</text>
-
-    <rect x="190" y="325" width="165" height="26" rx="4" fill="#eff6ff" stroke="#93c5fd"/>
-    <text x="272" y="342" text-anchor="middle" font-size="9" fill="#1d4ed8">[Критична інфрастр.]</text>
-
-    <!-- Кнопка розрахунку -->
-    <rect x="15" y="370" width="340" height="38" rx="6" fill="#2563eb"/>
-    <text x="185" y="394" text-anchor="middle" font-size="12" font-weight="bold" fill="#ffffff">Перейти до оперативної черги ➔</text>
-  </g>
-
-  <!-- Зона 4: FOOTER -->
-  <rect x="40" y="635" width="920" height="30" fill="#f8fafc" stroke="#cbd5e1"/>
-  <text x="50" y="655" font-size="10" fill="#64748b">© 2026 РФПС STEM-проєкт | КНУ ім. Тараса Шевченка | Автор: Лисий О.О., група 32/5</text>
 </svg>
