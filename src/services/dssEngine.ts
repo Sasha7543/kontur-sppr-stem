@@ -116,3 +116,48 @@ export function computeDeminingStats(sectors: Sector[]): DeminingStats {
     clearingProgressPercent: progressPercent,
   };
 }
+
+
+/**
+ * Прогноз площі розмінування до кінця місяця з 90% довірчим інтервалом (z = 1.645)
+ * Формули (2) та (3) Розділу 2.3 Звіту
+ */
+export function computeForecastInterval90(
+  sFact: number,
+  daysRemaining: number,
+  vMech: number = 4.6,
+  vSap: number = 1.5,
+  beta: number = 0.72,
+  sigmaS: number = 1.35
+): { sProg: number; sMin: number; sMax: number } {
+  const dailyWeighted = beta * vMech + (1 - beta) * vSap;
+  const sProg = sFact + daysRemaining * dailyWeighted;
+  const z90 = 1.645;
+  const margin = z90 * sigmaS * Math.sqrt(Math.max(daysRemaining, 0));
+  return {
+    sProg: Math.round(sProg * 10) / 10,
+    sMin: Math.round((sProg - margin) * 10) / 10,
+    sMax: Math.round((sProg + margin) * 10) / 10,
+  };
+}
+
+/**
+ * Захист від CSV-ін'єкцій для вивантаження у MS Excel (Розділ 2.6)
+ */
+export function escapeCsvCell(val: string | number): string {
+  const str = String(val ?? '');
+  if (/^[=+\-@]/.test(str)) {
+    return `'${str}`;
+  }
+  return str;
+}
+
+/**
+ * Санітизація директив штабу від XSS-вставок (Розділ 2.6)
+ */
+export function sanitizeDirectiveHtml(rawHtml: string): string {
+  return rawHtml
+    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '')
+    .replace(/<iframe[\s\S]*?>[\s\S]*?<\/iframe>/gi, '')
+    .replace(/\son\w+\s*=\s*(['"]).*?\1/gi, '');
+}

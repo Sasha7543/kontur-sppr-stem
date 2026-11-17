@@ -190,13 +190,13 @@ export const App: React.FC = () => {
       <header className="bg-slate-900 text-white shadow-md border-b border-slate-800 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="bg-blue-600 p-2 rounded-lg font-bold">СППР</div>
+            <div className="bg-emerald-600 p-2 rounded-lg font-bold">🧭 КОНТУР-СППР</div>
             <div>
               <h1 className="text-base sm:text-lg font-bold">
-                СППР «Гуманітарне розмінування»
-                <span className="ml-2 text-xs bg-blue-800 px-2 py-0.5 rounded-full border border-blue-600">РФПС v1.0</span>
+                Платформа пріоритизації гуманітарного розмінування «Контур-СППР»
+                <span className="ml-2 text-xs bg-emerald-800 px-2 py-0.5 rounded-full border border-emerald-600">v2.4</span>
               </h1>
-              <p className="text-xs text-slate-400">КНУ імені Тараса Шевченка | Кафедра ПСТ | Лисий О. О., гр. 32/5</p>
+              <p className="text-xs text-slate-400">КНУ імені Тараса Шевченка | Кафедра ПСТ | Лисий О. О., гр. ІПЗ-32 (5)</p>
             </div>
           </div>
           <button
